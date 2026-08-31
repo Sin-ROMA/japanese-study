@@ -1,0 +1,1168 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "Apple SD Gothic Neo",
+    "Noto Sans KR",
+    sans-serif;
+  background: #f7f8fc;
+  color: #252525;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.app {
+  min-height: 100vh;
+}
+
+/* Header */
+
+.header {
+  height: 72px;
+  padding: 0 60px;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #eeeeee;
+}
+
+.logo {
+  font-size: 24px;
+  font-weight: 800;
+}
+
+.header nav {
+  display: flex;
+  gap: 10px;
+}
+
+.header nav button {
+  border: none;
+  background: transparent;
+  padding: 10px 18px;
+  font-size: 15px;
+  border-radius: 10px;
+}
+
+.header nav button:hover {
+  background: #f1f2f7;
+}
+
+/* Main */
+
+.main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 70px 30px;
+}
+
+/* Welcome */
+
+.welcome {
+  text-align: center;
+  margin-bottom: 55px;
+}
+
+.japanese {
+  font-size: 18px;
+  color: #777;
+  margin-bottom: 12px;
+}
+
+.welcome h1 {
+  margin: 0;
+  font-size: 44px;
+  letter-spacing: -2px;
+}
+
+.welcome > p:last-child {
+  margin-top: 20px;
+  color: #777;
+  line-height: 1.8;
+  font-size: 16px;
+}
+
+/* Study cards */
+
+.study-menu {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.menu-card {
+  background: white;
+  border: 1px solid #eeeeee;
+  border-radius: 22px;
+  padding: 35px;
+  min-height: 250px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.menu-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+}
+
+.icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 16px;
+  background: #f1f2f7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30px;
+  font-weight: 700;
+  margin-bottom: 22px;
+}
+
+.menu-card h2 {
+  margin: 0 0 10px;
+  font-size: 23px;
+}
+
+.menu-card p {
+  margin: 0 0 25px;
+  color: #777;
+}
+
+.start-button {
+  border: none;
+  background: #252525;
+  color: white;
+  padding: 11px 20px;
+  border-radius: 10px;
+  font-size: 14px;
+}
+
+.start-button:hover {
+  background: #444;
+}
+
+.game-card {
+  background: #fffdf7;
+}
+
+/* Progress */
+
+.progress {
+  background: white;
+  border: 1px solid #eeeeee;
+  border-radius: 22px;
+  padding: 30px;
+  margin-top: 20px;
+}
+
+.progress-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.progress-header h2 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.progress-header span {
+  font-weight: 700;
+}
+
+.progress-bar {
+  height: 12px;
+  background: #eeeeee;
+  border-radius: 20px;
+  overflow: hidden;
+  margin-top: 20px;
+}
+
+.progress-fill {
+  width: 0%;
+  height: 100%;
+  border-radius: 20px;
+  background: #252525;
+}
+
+.progress p {
+  margin: 15px 0 0;
+  color: #888;
+}
+
+/* Footer */
+
+footer {
+  text-align: center;
+  padding: 30px;
+  color: #999;
+  font-size: 13px;
+}
+
+/* Mobile */
+
+@media (max-width: 700px) {
+  .header {
+    padding: 0 20px;
+  }
+
+  .logo {
+    font-size: 20px;
+  }
+
+  .header nav button {
+    padding: 8px;
+  }
+
+  .main {
+    padding: 45px 20px;
+  }
+
+  .welcome h1 {
+    font-size: 34px;
+  }
+
+  .study-menu {
+    grid-template-columns: 1fr;
+  }
+}
+/* Hiragana page */
+
+.hiragana-page {
+  text-align: center;
+}
+
+.back-button {
+  border: none;
+  background: transparent;
+  color: #777;
+  font-size: 14px;
+  padding: 8px 0;
+  margin-bottom: 30px;
+}
+
+.back-button:hover {
+  color: #222;
+}
+
+.hiragana-page h1 {
+  margin: 0;
+  font-size: 40px;
+}
+
+.description {
+  color: #777;
+  margin-top: 15px;
+}
+
+.hiragana-card {
+  max-width: 600px;
+  margin: 40px auto 20px;
+  padding: 45px;
+  background: white;
+  border: 1px solid #eeeeee;
+  border-radius: 25px;
+}
+
+.big-character {
+  font-size: 120px;
+  line-height: 1.2;
+  font-weight: 500;
+}
+
+.pronunciation {
+  font-size: 28px;
+  font-weight: 700;
+  margin-top: 10px;
+}
+
+.romaji {
+  color: #888;
+  font-size: 20px;
+  margin-top: 5px;
+}
+
+.example {
+  margin-top: 35px;
+  padding-top: 25px;
+  border-top: 1px solid #eeeeee;
+}
+
+.example h3 {
+  margin-bottom: 20px;
+  color: #777;
+}
+
+.example-japanese {
+  font-size: 32px;
+  font-weight: 700;
+}
+
+.example-romaji {
+  color: #888;
+  margin-top: 5px;
+}
+
+.example-meaning {
+  margin-top: 5px;
+  font-size: 18px;
+}
+
+.character-count {
+  color: #777;
+  font-size: 15px;
+  margin: 15px 0;
+}
+
+.navigation-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 50px;
+}
+
+.next-button {
+  min-width: 120px;
+  border: none;
+  background: #252525;
+  color: white;
+  padding: 13px 25px;
+  border-radius: 12px;
+  font-size: 15px;
+}
+
+.next-button:hover {
+  background: #444;
+}
+
+.next-button:disabled {
+  background: #dddddd;
+  color: #999;
+  cursor: not-allowed;
+}
+
+/* Hiragana table */
+
+.hiragana-table {
+  max-width: 850px;
+  margin: 0 auto;
+  padding: 30px;
+  background: white;
+  border: 1px solid #eeeeee;
+  border-radius: 22px;
+}
+
+.hiragana-table h2 {
+  margin: 0;
+  font-size: 22px;
+}
+
+.hiragana-table > p {
+  color: #888;
+  font-size: 14px;
+  margin: 8px 0 25px;
+}
+
+.hiragana-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+}
+
+.hiragana-item {
+  min-height: 75px;
+  border: 1px solid #eeeeee;
+  background: #fafafa;
+  border-radius: 12px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.hiragana-item:hover {
+  transform: translateY(-2px);
+  background: #f1f2f7;
+}
+
+.hiragana-item.active {
+  background: #252525;
+  color: white;
+  border-color: #252525;
+}
+
+.table-character {
+  font-size: 28px;
+  font-weight: 600;
+}
+
+.table-pronunciation {
+  font-size: 12px;
+  margin-top: 3px;
+  opacity: 0.7;
+}
+
+
+/* Mobile */
+
+@media (max-width: 700px) {
+
+  .hiragana-page h1 {
+    font-size: 32px;
+  }
+
+  .hiragana-card {
+    padding: 30px 20px;
+  }
+
+  .big-character {
+    font-size: 90px;
+  }
+
+  .hiragana-table {
+    padding: 15px;
+  }
+
+  .hiragana-grid {
+    gap: 6px;
+  }
+
+  .hiragana-item {
+    min-height: 65px;
+  }
+
+  .table-character {
+    font-size: 23px;
+  }
+
+}
+
+/* Quiz */
+
+.quiz-page {
+  text-align: center;
+}
+
+.quiz-page h1 {
+  margin: 0;
+  font-size: 40px;
+}
+
+.quiz-score {
+  margin-top: 15px;
+  font-weight: 700;
+  color: #555;
+}
+
+.quiz-card {
+  max-width: 650px;
+  margin: 40px auto;
+  padding: 45px 40px;
+  background: white;
+  border: 1px solid #eeeeee;
+  border-radius: 25px;
+}
+
+.quiz-question {
+  color: #777;
+  font-size: 18px;
+}
+
+.quiz-character {
+  font-size: 130px;
+  line-height: 1.2;
+  margin: 25px 0 35px;
+}
+
+.quiz-options {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.quiz-option {
+  padding: 18px;
+  border: 1px solid #dddddd;
+  background: #fafafa;
+  border-radius: 12px;
+  font-size: 20px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.quiz-option:hover {
+  transform: translateY(-2px);
+  background: #f1f1f1;
+}
+
+.quiz-option.correct {
+  background: #dff5e3;
+  border-color: #45a35a;
+  color: #257638;
+}
+
+.quiz-option.wrong {
+  background: #ffe2e2;
+  border-color: #df5b5b;
+  color: #b52d2d;
+}
+
+.quiz-result {
+  margin-top: 30px;
+  padding-top: 25px;
+  border-top: 1px solid #eeeeee;
+}
+
+.correct-text {
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.wrong-text {
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.quiz-result p {
+  color: #777;
+}
+
+.quiz-result strong {
+  color: #222;
+}
+
+.quiz-next-button {
+  margin-top: 15px;
+  padding: 13px 30px;
+  border: none;
+  border-radius: 12px;
+  background: #252525;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.quiz-next-button:hover {
+  background: #444;
+}
+
+
+@media (max-width: 700px) {
+
+  .quiz-page h1 {
+    font-size: 32px;
+  }
+
+  .quiz-card {
+    padding: 30px 20px;
+  }
+
+  .quiz-character {
+    font-size: 100px;
+  }
+
+  .quiz-options {
+    grid-template-columns: 1fr;
+  }
+
+}
+
+/* Quiz Progress */
+
+.quiz-progress {
+  margin-top: 25px;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+
+/* Quiz Result */
+
+.quiz-result-page {
+  text-align: center;
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 60px 20px;
+}
+
+.result-icon {
+  font-size: 70px;
+  margin-bottom: 20px;
+}
+
+.quiz-result-page h1 {
+  font-size: 42px;
+  margin: 0;
+}
+
+.result-description {
+  color: #777;
+  margin-top: 15px;
+}
+
+.result-card {
+  max-width: 500px;
+  margin: 40px auto;
+  padding: 30px;
+
+  background: white;
+
+  border: 1px solid #eeeeee;
+  border-radius: 20px;
+}
+
+.result-score {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 20px 10px;
+
+  border-bottom: 1px solid #eeeeee;
+}
+
+.result-score:last-child {
+  border-bottom: none;
+}
+
+.result-score span {
+  color: #777;
+  font-size: 17px;
+}
+
+.result-score strong {
+  font-size: 28px;
+}
+
+.result-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 25px;
+}
+
+.result-home-button {
+  padding: 13px 25px;
+
+  border: 1px solid #dddddd;
+  background: white;
+
+  border-radius: 12px;
+
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.result-home-button:hover {
+  background: #f5f5f5;
+}
+
+
+@media (max-width: 700px) {
+
+  .quiz-result-page h1 {
+    font-size: 34px;
+  }
+
+  .result-buttons {
+    flex-direction: column;
+  }
+
+  .quiz-next-button,
+  .result-home-button {
+    width: 100%;
+  }
+
+}
+
+/* Quiz Select */
+
+.quiz-select-page {
+  text-align: center;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+.quiz-select-page h1 {
+  font-size: 40px;
+  margin: 0;
+}
+
+.quiz-select-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 25px;
+  max-width: 700px;
+  margin: 45px auto;
+}
+
+.quiz-select-card {
+  padding: 40px 25px;
+
+  background: white;
+
+  border: 1px solid #eeeeee;
+  border-radius: 22px;
+
+  cursor: pointer;
+
+  transition: all 0.2s;
+}
+
+.quiz-select-card:hover {
+  transform: translateY(-5px);
+  border-color: #cccccc;
+}
+
+.select-character {
+  font-size: 90px;
+  line-height: 1.2;
+}
+
+.quiz-select-card h2 {
+  margin-top: 20px;
+  font-size: 24px;
+}
+
+.quiz-select-card p {
+  color: #777;
+  line-height: 1.6;
+}
+
+
+@media (max-width: 700px) {
+
+  .quiz-select-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .quiz-select-page h1 {
+    font-size: 32px;
+  }
+
+}
+
+/* Word Learning */
+
+.word-page {
+  text-align: center;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+.word-page h1 {
+  font-size: 40px;
+  margin: 0;
+}
+
+.word-card {
+  position: relative;
+
+  max-width: 650px;
+
+  margin: 40px auto 25px;
+
+  padding: 45px 35px;
+
+  background: white;
+
+  border: 1px solid #eeeeee;
+  border-radius: 24px;
+}
+
+.word-number {
+  position: absolute;
+
+  top: 20px;
+  right: 25px;
+
+  color: #888;
+
+  font-size: 14px;
+}
+
+.word-japanese {
+  font-size: 64px;
+  font-weight: 700;
+
+  margin-top: 10px;
+}
+
+.word-reading {
+  margin-top: 12px;
+
+  font-size: 24px;
+}
+
+.word-romaji {
+  margin-top: 5px;
+
+  color: #888;
+
+  font-size: 17px;
+}
+
+.word-meaning {
+  margin-top: 20px;
+
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.word-example {
+  margin-top: 35px;
+
+  padding: 25px;
+
+  background: #f8f8f8;
+
+  border-radius: 16px;
+}
+
+.word-example h3 {
+  margin-top: 0;
+
+  font-size: 16px;
+}
+
+.example-japanese {
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.example-romaji {
+  margin-top: 8px;
+
+  color: #777;
+}
+
+.example-meaning {
+  margin-top: 5px;
+}
+
+.word-list {
+  margin-top: 55px;
+}
+
+.word-list h2 {
+  font-size: 28px;
+}
+
+.word-list-grid {
+  display: grid;
+
+  grid-template-columns: repeat(3, 1fr);
+
+  gap: 12px;
+
+  margin-top: 25px;
+}
+
+.word-list-item {
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  padding: 18px 10px;
+
+  background: white;
+
+  border: 1px solid #eeeeee;
+
+  border-radius: 14px;
+
+  cursor: pointer;
+
+  transition: 0.2s;
+}
+
+.word-list-item:hover {
+  transform: translateY(-2px);
+}
+
+.word-list-item.active {
+  border: 2px solid #222;
+}
+
+.list-word {
+  font-size: 21px;
+  font-weight: 600;
+}
+
+.list-meaning {
+  margin-top: 5px;
+
+  color: #777;
+
+  font-size: 14px;
+}
+
+
+@media (max-width: 700px) {
+
+  .word-page h1 {
+    font-size: 32px;
+  }
+
+  .word-card {
+    padding: 40px 20px;
+  }
+
+  .word-japanese {
+    font-size: 52px;
+  }
+
+  .word-list-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+}
+
+/* Word Quiz */
+
+.word-quiz-start {
+  max-width: 650px;
+
+  margin: 50px auto 20px;
+
+  padding: 30px;
+
+  background: white;
+
+  border: 1px solid #eeeeee;
+
+  border-radius: 20px;
+
+  text-align: center;
+}
+
+.word-quiz-start h2 {
+  margin-top: 0;
+
+  font-size: 26px;
+}
+
+.word-quiz-start p {
+  color: #777;
+
+  margin-bottom: 20px;
+}
+
+.word-quiz-reading {
+  margin-top: 10px;
+
+  color: #777;
+
+  font-size: 20px;
+}
+
+.word-quiz-options {
+  display: grid;
+
+  grid-template-columns: repeat(2, 1fr);
+
+  gap: 15px;
+
+  margin-top: 30px;
+}
+
+
+@media (max-width: 600px) {
+
+  .word-quiz-options {
+    grid-template-columns: 1fr;
+  }
+
+}
+
+/* Typing Game */
+
+.typing-page {
+  max-width: 900px;
+
+  margin: 0 auto;
+
+  padding: 40px 20px;
+
+  text-align: center;
+}
+
+.typing-page h1 {
+  font-size: 40px;
+
+  margin: 0;
+}
+
+
+.typing-info {
+  display: grid;
+
+  grid-template-columns: repeat(3, 1fr);
+
+  gap: 15px;
+
+  max-width: 650px;
+
+  margin: 35px auto 25px;
+}
+
+
+.typing-info > div {
+  padding: 18px;
+
+  background: white;
+
+  border: 1px solid #eeeeee;
+
+  border-radius: 15px;
+
+  color: #777;
+}
+
+
+.typing-info strong {
+  display: block;
+
+  margin-top: 6px;
+
+  color: #222;
+
+  font-size: 24px;
+}
+
+
+.typing-card {
+  max-width: 650px;
+
+  margin: 0 auto;
+
+  padding: 50px 30px;
+
+  background: white;
+
+  border: 1px solid #eeeeee;
+
+  border-radius: 25px;
+}
+
+
+.typing-guide {
+  color: #777;
+
+  margin-bottom: 35px;
+}
+
+
+.typing-japanese {
+  font-size: 80px;
+
+  font-weight: 700;
+
+  line-height: 1.2;
+}
+
+
+.typing-reading {
+  margin-top: 12px;
+
+  font-size: 22px;
+
+  color: #666;
+}
+
+
+.typing-romaji {
+  margin-top: 8px;
+
+  color: #999;
+
+  font-size: 17px;
+}
+
+
+.typing-input {
+  display: block;
+
+  width: 100%;
+
+  max-width: 450px;
+
+  box-sizing: border-box;
+
+  margin: 35px auto 0;
+
+  padding: 17px 20px;
+
+  border: 2px solid #dddddd;
+
+  border-radius: 12px;
+
+  font-size: 22px;
+
+  text-align: center;
+
+  outline: none;
+}
+
+
+.typing-input:focus {
+  border-color: #222;
+}
+
+
+.typing-hint {
+  color: #999;
+
+  font-size: 14px;
+
+  margin-top: 12px;
+}
+
+
+@media (max-width: 600px) {
+
+  .typing-page h1 {
+    font-size: 32px;
+  }
+
+
+  .typing-info {
+    grid-template-columns: 1fr;
+  }
+
+
+  .typing-japanese {
+    font-size: 60px;
+  }
+
+}
+
+/* Typing Result */
+
+.typing-result-page {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.typing-result-page h1 {
+  font-size: 40px;
+  margin: 10px 0;
+}
