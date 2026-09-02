@@ -1166,3 +1166,109 @@ footer {
   font-size: 40px;
   margin: 10px 0;
 }
+
+/* =========================
+   타자연습 게임 디자인
+   ========================= */
+
+.typing-page {
+  max-width: 900px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.typing-info {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin: 30px 0;
+}
+
+.typing-info > div {
+  min-width: 140px;
+  padding: 18px 25px;
+  background: white;
+  border: 1px solid #e5e5e5;
+  border-radius: 16px;
+  font-size: 15px;
+}
+
+.typing-info strong {
+  display: block;
+  margin-top: 6px;
+  font-size: 24px;
+}
+
+.typing-card {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 50px 40px;
+  background: white;
+  border-radius: 24px;
+  border: 1px solid #e5e5e5;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+}
+
+.typing-guide {
+  margin-bottom: 30px;
+  color: #777;
+  font-size: 16px;
+}
+
+.typing-japanese {
+  font-size: 80px;
+  font-weight: 700;
+  line-height: 1.2;
+  margin: 20px 0;
+}
+
+.typing-reading {
+  font-size: 22px;
+  color: #777;
+  margin-bottom: 30px;
+}
+
+.typing-input {
+  width: 80%;
+  max-width: 500px;
+  padding: 16px 20px;
+  font-size: 20px;
+  text-align: center;
+  border: 2px solid #ddd;
+  border-radius: 12px;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.typing-input:focus {
+  border-color: #222;
+}
+
+.typing-hint {
+  margin-top: 18px;
+  color: #999;
+  font-size: 14px;
+}
+
+.typing-feedback {
+  margin: 15px 0;
+  font-size: 22px;
+  font-weight: 700;
+  animation: typingFeedback 0.3s ease;
+}
+
+@keyframes typingFeedback {
+  0% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.typing-feedback.wrong {
+  color: #e74c3c;
+}

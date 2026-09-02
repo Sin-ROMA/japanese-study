@@ -5,24 +5,24 @@ import katakana from './data/katakana'
 import words from './data/words'
 
 function App() {
+
+  // =========================
+  // 기본 페이지
+  // =========================
+
   const [page, setPage] = useState('home')
+
+  // =========================
+  // 히라가나 / 가타카나 / 단어
+  // =========================
+
   const [currentIndex, setCurrentIndex] = useState(0)
   const [katakanaIndex, setKatakanaIndex] = useState(0)
   const [wordIndex, setWordIndex] = useState(0)
 
-const [wordQuizIndex, setWordQuizIndex] = useState(0)
-const [wordQuizOptions, setWordQuizOptions] = useState([])
-const [wordQuizAnswer, setWordQuizAnswer] = useState(null)
-const [wordQuizScore, setWordQuizScore] = useState(0)
-const [wordQuizQuestionCount, setWordQuizQuestionCount] = useState(0)
-const [wordQuizCorrectCount, setWordQuizCorrectCount] = useState(0)
-  
-const [typingIndex, setTypingIndex] = useState(0)
-const [typingInput, setTypingInput] = useState('')
-const [typingScore, setTypingScore] = useState(0)
-const [typingTime, setTypingTime] = useState(60)
-const [typingStarted, setTypingStarted] = useState(false)
-const [typingCorrectCount, setTypingCorrectCount] = useState(0)
+  // =========================
+  // 문자 퀴즈
+  // =========================
 
   const [quizCharacterIndex, setQuizCharacterIndex] = useState(0)
   const [quizOptions, setQuizOptions] = useState([])
@@ -32,342 +32,437 @@ const [typingCorrectCount, setTypingCorrectCount] = useState(0)
   const [quizCorrectCount, setQuizCorrectCount] = useState(0)
   const [quizType, setQuizType] = useState('hiragana')
 
-const getQuizData = () => {
-  if (quizType === 'katakana') {
-    return katakana
+  // =========================
+  // 단어 퀴즈
+  // =========================
+
+  const [wordQuizIndex, setWordQuizIndex] = useState(0)
+  const [wordQuizOptions, setWordQuizOptions] = useState([])
+  const [wordQuizAnswer, setWordQuizAnswer] = useState(null)
+  const [wordQuizScore, setWordQuizScore] = useState(0)
+  const [wordQuizQuestionCount, setWordQuizQuestionCount] = useState(0)
+  const [wordQuizCorrectCount, setWordQuizCorrectCount] = useState(0)
+
+  // =========================
+  // 타자연습
+  // =========================
+
+  const [typingIndex, setTypingIndex] = useState(0)
+  const [typingInput, setTypingInput] = useState('')
+  const [typingScore, setTypingScore] = useState(0)
+  const [typingTime, setTypingTime] = useState(60)
+  const [typingStarted, setTypingStarted] = useState(false)
+  const [typingCorrectCount, setTypingCorrectCount] = useState(0)
+  const [typingFeedback, setTypingFeedback] = useState('')
+
+
+  // =========================
+  // 퀴즈 데이터
+  // =========================
+
+  const getQuizData = () => {
+
+    if (quizType === 'katakana') {
+      return katakana
+    }
+
+    return hiragana
   }
 
-  return hiragana
-}
 
-    // 퀴즈 시작
+  // =========================
+  // 문자 퀴즈 시작
+  // =========================
+
   const startQuiz = (type = quizType) => {
 
-  const quizData =
-  type === 'katakana'
-    ? katakana
-    : hiragana
+    const quizData =
+      type === 'katakana'
+        ? katakana
+        : hiragana
 
-  const randomIndex = Math.floor(
-    Math.random() * quizData.length
-  )
+    const randomIndex = Math.floor(
+      Math.random() * quizData.length
+    )
 
-  const correctAnswer =
-    quizData[randomIndex].pronunciation
+    const correctAnswer =
+      quizData[randomIndex].pronunciation
+
+    const wrongAnswers = quizData
+      .filter((_, index) => index !== randomIndex)
+      .sort(() => Math.random() - 0.5)
+      .slice(0, 3)
+      .map((item) => item.pronunciation)
+
+    const options = [
+      correctAnswer,
+      ...wrongAnswers
+    ].sort(() => Math.random() - 0.5)
+
+    setQuizType(type)
+    setQuizCharacterIndex(randomIndex)
+    setQuizOptions(options)
+    setSelectedAnswer(null)
+
+    setQuizScore(0)
+    setQuizQuestionCount(0)
+    setQuizCorrectCount(0)
+
+    setPage('quiz')
+  }
 
 
-  const wrongAnswers = quizData
-    .filter((_, index) => index !== randomIndex)
-    .sort(() => Math.random() - 0.5)
-    .slice(0, 3)
-    .map((item) => item.pronunciation)
+  // =========================
+  // 다음 문자 퀴즈
+  // =========================
 
-
-  const options = [
-    correctAnswer,
-    ...wrongAnswers
-  ].sort(() => Math.random() - 0.5)
-
-
-  setQuizCharacterIndex(randomIndex)
-  setQuizOptions(options)
-  setSelectedAnswer(null)
-
-  setQuizScore(0)
-  setQuizQuestionCount(0)
-  setQuizCorrectCount(0)
-
-  setPage('quiz')
-}
-
-  // 다음 퀴즈
   const nextQuiz = () => {
 
-  // 10번째 문제를 끝냈다면 결과 화면
-  if (quizQuestionCount >= 9) {
-    setPage('quizResult')
-    return
+    if (quizQuestionCount >= 9) {
+      setPage('quizResult')
+      return
+    }
+
+    const quizData = getQuizData()
+
+    const randomIndex = Math.floor(
+      Math.random() * quizData.length
+    )
+
+    const correctAnswer =
+      quizData[randomIndex].pronunciation
+
+    const wrongAnswers = quizData
+      .filter((_, index) => index !== randomIndex)
+      .sort(() => Math.random() - 0.5)
+      .slice(0, 3)
+      .map((item) => item.pronunciation)
+
+    const options = [
+      correctAnswer,
+      ...wrongAnswers
+    ].sort(() => Math.random() - 0.5)
+
+    setQuizCharacterIndex(randomIndex)
+    setQuizOptions(options)
+    setSelectedAnswer(null)
+
+    setQuizQuestionCount(
+      (count) => count + 1
+    )
   }
 
 
-  const quizData = getQuizData()
+  // =========================
+  // 문자 퀴즈 정답 확인
+  // =========================
 
-
-  const randomIndex = Math.floor(
-    Math.random() * quizData.length
-  )
-
-
-  const correctAnswer =
-    quizData[randomIndex].pronunciation
-
-
-  const wrongAnswers = quizData
-    .filter((_, index) => index !== randomIndex)
-    .sort(() => Math.random() - 0.5)
-    .slice(0, 3)
-    .map((item) => item.pronunciation)
-
-
-  const options = [
-    correctAnswer,
-    ...wrongAnswers
-  ].sort(() => Math.random() - 0.5)
-
-
-  setQuizCharacterIndex(randomIndex)
-  setQuizOptions(options)
-  setSelectedAnswer(null)
-
-
-  setQuizQuestionCount(
-    (count) => count + 1
-  )
-}
-
-
-  // 정답 확인
   const checkAnswer = (answer) => {
 
-  if (selectedAnswer !== null) {
-    return
+    if (selectedAnswer !== null) {
+      return
+    }
+
+    const quizData = getQuizData()
+
+    setSelectedAnswer(answer)
+
+    if (
+      answer ===
+      quizData[quizCharacterIndex].pronunciation
+    ) {
+
+      setQuizScore(
+        (score) => score + 10
+      )
+
+      setQuizCorrectCount(
+        (count) => count + 1
+      )
+    }
   }
 
 
-  const quizData = getQuizData()
+  // =========================
+  // 단어 퀴즈 시작
+  // =========================
 
+  const startWordQuiz = () => {
 
-  setSelectedAnswer(answer)
-
-
-  if (
-    answer ===
-    quizData[quizCharacterIndex].pronunciation
-  ) {
-
-    setQuizScore(
-      (score) => score + 10
-    )
-
-    setQuizCorrectCount(
-      (count) => count + 1
-    )
-  }
-}
-
-// 단어 퀴즈 시작
-const startWordQuiz = () => {
-
-  const randomIndex = Math.floor(
-    Math.random() * words.length
-  )
-
-  const correctAnswer =
-    words[randomIndex].meaning
-
-
-  const wrongAnswers = words
-    .filter((_, index) => index !== randomIndex)
-    .sort(() => Math.random() - 0.5)
-    .slice(0, 3)
-    .map((item) => item.meaning)
-
-
-  const options = [
-    correctAnswer,
-    ...wrongAnswers
-  ].sort(() => Math.random() - 0.5)
-
-
-  setWordQuizIndex(randomIndex)
-  setWordQuizOptions(options)
-  setWordQuizAnswer(null)
-
-  setWordQuizScore(0)
-  setWordQuizQuestionCount(0)
-  setWordQuizCorrectCount(0)
-
-  setPage('wordQuiz')
-}
-
-// 일본어 타자 게임 시작
-const startTypingGame = () => {
-
-  const randomIndex = Math.floor(
-    Math.random() * words.length
-  )
-
-  setTypingIndex(randomIndex)
-
-  setTypingInput('')
-
-  setTypingScore(0)
-
-  setTypingTime(60)
-
-  setTypingStarted(true)
-
-  setTypingCorrectCount(0)
-
-  setPage('typing')
-}
-
-// 타자 입력 확인
-const checkTypingAnswer = (value) => {
-
-  setTypingInput(value)
-
-
-  const currentWord = words[typingIndex]
-
-
-  if (
-    value.toLowerCase() ===
-    currentWord.romaji.toLowerCase()
-  ) {
-
-    setTypingScore(
-      (score) => score + 10
-    )
-
-    setTypingCorrectCount(
-      (count) => count + 1
-    )
-
-
-    const nextIndex = Math.floor(
+    const randomIndex = Math.floor(
       Math.random() * words.length
     )
 
+    const correctAnswer =
+      words[randomIndex].meaning
 
-    setTypingIndex(nextIndex)
+    const wrongAnswers = words
+      .filter((_, index) => index !== randomIndex)
+      .sort(() => Math.random() - 0.5)
+      .slice(0, 3)
+      .map((item) => item.meaning)
 
-    setTypingInput('')
+    const options = [
+      correctAnswer,
+      ...wrongAnswers
+    ].sort(() => Math.random() - 0.5)
+
+    setWordQuizIndex(randomIndex)
+    setWordQuizOptions(options)
+    setWordQuizAnswer(null)
+
+    setWordQuizScore(0)
+    setWordQuizQuestionCount(0)
+    setWordQuizCorrectCount(0)
+
+    setPage('wordQuiz')
   }
-}
 
-// 타자 게임 타이머
-useEffect(() => {
 
-  if (!typingStarted) {
-    return
+  // =========================
+  // 단어 퀴즈 정답 확인
+  // =========================
+
+  const checkWordQuizAnswer = (answer) => {
+
+    if (wordQuizAnswer !== null) {
+      return
+    }
+
+    const currentWord = words[wordQuizIndex]
+
+    setWordQuizAnswer(answer)
+
+    if (answer === currentWord.meaning) {
+
+      setWordQuizScore(
+        (score) => score + 10
+      )
+
+      setWordQuizCorrectCount(
+        (count) => count + 1
+      )
+    }
   }
 
 
-  if (typingTime <= 0) {
+  // =========================
+  // 다음 단어 퀴즈
+  // =========================
 
-    setTypingStarted(false)
+  const nextWordQuiz = () => {
 
-    setPage('typingResult')
+    if (wordQuizQuestionCount >= 9) {
+      setPage('wordQuizResult')
+      return
+    }
 
-    return
-  }
-
-
-  const timer = setTimeout(() => {
-
-    setTypingTime(
-      (time) => time - 1
+    const randomIndex = Math.floor(
+      Math.random() * words.length
     )
 
-  }, 1000)
+    const correctAnswer =
+      words[randomIndex].meaning
 
+    const wrongAnswers = words
+      .filter((_, index) => index !== randomIndex)
+      .sort(() => Math.random() - 0.5)
+      .slice(0, 3)
+      .map((item) => item.meaning)
 
-  return () => clearTimeout(timer)
+    const options = [
+      correctAnswer,
+      ...wrongAnswers
+    ].sort(() => Math.random() - 0.5)
 
-}, [typingStarted, typingTime])
+    setWordQuizIndex(randomIndex)
+    setWordQuizOptions(options)
+    setWordQuizAnswer(null)
 
-// 단어 퀴즈 정답 확인
-const checkWordQuizAnswer = (answer) => {
-
-  if (wordQuizAnswer !== null) {
-    return
-  }
-
-
-  const currentWord = words[wordQuizIndex]
-
-
-  setWordQuizAnswer(answer)
-
-
-  if (answer === currentWord.meaning) {
-
-    setWordQuizScore(
-      (score) => score + 10
-    )
-
-    setWordQuizCorrectCount(
+    setWordQuizQuestionCount(
       (count) => count + 1
     )
   }
-}
 
-const nextWordQuiz = () => {
 
-  if (wordQuizQuestionCount >= 9) {
-    setPage('wordQuizResult')
-    return
+  // =========================
+  // 타자연습 시작
+  // =========================
+
+  const startTypingGame = () => {
+
+    const randomIndex = Math.floor(
+      Math.random() * words.length
+    )
+
+    setTypingIndex(randomIndex)
+    setTypingInput('')
+    setTypingScore(0)
+    setTypingTime(60)
+    setTypingStarted(true)
+    setTypingCorrectCount(0)
+    setTypingFeedback('')
+
+    setPage('typing')
   }
 
 
-  const randomIndex = Math.floor(
-    Math.random() * words.length
-  )
+  // =========================
+  // 타자 입력 확인
+  // =========================
+
+  const checkTypingAnswer = (value) => {
+
+    const currentWord = words[typingIndex]
+
+    const answer =
+      currentWord.romaji.toLowerCase()
+
+    const input =
+      value.toLowerCase()
+
+    setTypingInput(value)
 
 
-  const correctAnswer =
-    words[randomIndex].meaning
+    // -------------------------
+    // 정답
+    // -------------------------
+
+    if (input === answer) {
+
+      setTypingScore(
+        (score) => score + 10
+      )
+
+      setTypingCorrectCount(
+        (count) => count + 1
+      )
+
+      setTypingFeedback('+10점! 🎉')
+
+      setTimeout(() => {
+        setTypingFeedback('')
+      }, 700)
 
 
-  const wrongAnswers = words
-    .filter((_, index) => index !== randomIndex)
-    .sort(() => Math.random() - 0.5)
-    .slice(0, 3)
-    .map((item) => item.meaning)
+      const nextIndex = Math.floor(
+        Math.random() * words.length
+      )
+
+      setTypingIndex(nextIndex)
+      setTypingInput('')
+
+      return
+    }
 
 
-  const options = [
-    correctAnswer,
-    ...wrongAnswers
-  ].sort(() => Math.random() - 0.5)
+    // -------------------------
+    // 아직 올바르게 입력 중
+    // -------------------------
+
+    if (
+      input.length === 0 ||
+      answer.startsWith(input)
+    ) {
+
+      setTypingFeedback('')
+
+      return
+    }
 
 
-  setWordQuizIndex(randomIndex)
-  setWordQuizOptions(options)
-  setWordQuizAnswer(null)
+    // -------------------------
+    // 잘못 입력
+    // -------------------------
+
+    setTypingFeedback('❌ 다시 입력해보세요!')
+  }
 
 
-  setWordQuizQuestionCount(
-    (count) => count + 1
-  )
-}
+  // =========================
+  // 타자 게임 타이머
+  // =========================
 
+  useEffect(() => {
+
+    if (!typingStarted) {
+      return
+    }
+
+    if (typingTime <= 0) {
+
+      setTypingStarted(false)
+      setPage('typingResult')
+
+      return
+    }
+
+    const timer = setTimeout(() => {
+
+      setTypingTime(
+        (time) => time - 1
+      )
+
+    }, 1000)
+
+    return () => clearTimeout(timer)
+
+  }, [typingStarted, typingTime])
+
+
+  // =========================
   // 다음 히라가나
+  // =========================
+
   const nextCharacter = () => {
-    if (currentIndex < hiragana.length - 1) {
-      setCurrentIndex(currentIndex + 1)
+
+    if (
+      currentIndex <
+      hiragana.length - 1
+    ) {
+
+      setCurrentIndex(
+        currentIndex + 1
+      )
     }
   }
 
+
+  // =========================
   // 이전 히라가나
+  // =========================
+
   const previousCharacter = () => {
+
     if (currentIndex > 0) {
-      setCurrentIndex(currentIndex - 1)
+
+      setCurrentIndex(
+        currentIndex - 1
+      )
     }
   }
 
+
+  // ============================================================
   // 홈 화면
+  // ============================================================
+
   if (page === 'home') {
+
     return (
       <div className="app">
+
         <header className="header">
+
           <div className="logo">
             🇯🇵 にほんご
           </div>
 
           <nav>
-            <button onClick={() => setPage('home')}>
+
+            <button
+              onClick={() => setPage('home')}
+            >
               홈
             </button>
 
@@ -378,12 +473,16 @@ const nextWordQuiz = () => {
             <button>
               게임
             </button>
+
           </nav>
+
         </header>
+
 
         <main className="main">
 
           <section className="welcome">
+
             <p className="japanese">
               いっしょに にほんごを べんきょうしましょう!
             </p>
@@ -397,12 +496,14 @@ const nextWordQuiz = () => {
               <br />
               쉽고 재미있게 일본어를 공부해보세요.
             </p>
+
           </section>
 
 
           <section className="study-menu">
 
             {/* 히라가나 */}
+
             <div className="menu-card">
 
               <div className="icon">
@@ -431,6 +532,7 @@ const nextWordQuiz = () => {
 
 
             {/* 가타카나 */}
+
             <div className="menu-card">
 
               <div className="icon">
@@ -448,8 +550,8 @@ const nextWordQuiz = () => {
               <button
                 className="start-button"
                 onClick={() => {
-                 setKatakanaIndex(0)
-                 setPage('katakana')
+                  setKatakanaIndex(0)
+                  setPage('katakana')
                 }}
               >
                 공부하기
@@ -459,6 +561,7 @@ const nextWordQuiz = () => {
 
 
             {/* 단어 */}
+
             <div className="menu-card">
 
               <div className="icon">
@@ -487,6 +590,7 @@ const nextWordQuiz = () => {
 
 
             {/* 게임 */}
+
             <div className="menu-card game-card">
 
               <div className="icon">
@@ -521,6 +625,7 @@ const nextWordQuiz = () => {
 
 
           {/* 학습 진행률 */}
+
           <section className="progress">
 
             <div className="progress-header">
@@ -549,9 +654,11 @@ const nextWordQuiz = () => {
 
 
         <footer>
+
           <p>
             にほんご 공부 · Japanese Study
           </p>
+
         </footer>
 
       </div>
@@ -559,10 +666,14 @@ const nextWordQuiz = () => {
   }
 
 
-  // 히라가나 학습 화면
+  // ============================================================
+  // 히라가나 학습
+  // ============================================================
+
   if (page === 'hiragana') {
 
-    const current = hiragana[currentIndex]
+    const current =
+      hiragana[currentIndex]
 
     return (
       <div className="app">
@@ -574,11 +685,11 @@ const nextWordQuiz = () => {
           </div>
 
           <nav>
-
-            <button onClick={() => setPage('home')}>
+            <button
+              onClick={() => setPage('home')}
+            >
               홈
             </button>
-
           </nav>
 
         </header>
@@ -595,39 +706,32 @@ const nextWordQuiz = () => {
               ← 홈으로 돌아가기
             </button>
 
-
             <p className="japanese">
               ひらがな
             </p>
 
-
             <h1>
               히라가나 학습
             </h1>
-
 
             <p className="description">
               일본어의 기본 문자인 히라가나를 배워봅시다.
             </p>
 
 
-            {/* 히라가나 카드 */}
             <div className="hiragana-card">
 
               <div className="big-character">
                 {current.character}
               </div>
 
-
               <div className="pronunciation">
                 {current.pronunciation}
               </div>
 
-
               <div className="romaji">
                 {current.romaji}
               </div>
-
 
               <div className="example">
 
@@ -652,69 +756,75 @@ const nextWordQuiz = () => {
             </div>
 
 
-            {/* 현재 위치 */}
-<p className="character-count">
-  {currentIndex + 1} / {hiragana.length}
-</p>
+            <p className="character-count">
+              {currentIndex + 1} / {hiragana.length}
+            </p>
 
 
-{/* 이전 / 다음 */}
-<div className="navigation-buttons">
+            <div className="navigation-buttons">
 
-  <button
-    className="next-button"
-    onClick={previousCharacter}
-    disabled={currentIndex === 0}
-  >
-    ← 이전
-  </button>
+              <button
+                className="next-button"
+                onClick={previousCharacter}
+                disabled={currentIndex === 0}
+              >
+                ← 이전
+              </button>
+
+              <button
+                className="next-button"
+                onClick={nextCharacter}
+                disabled={
+                  currentIndex === hiragana.length - 1
+                }
+              >
+                다음 →
+              </button>
+
+            </div>
 
 
-  <button
-    className="next-button"
-    onClick={nextCharacter}
-    disabled={currentIndex === hiragana.length - 1}
-  >
-    다음 →
-  </button>
+            <div className="hiragana-table">
 
-</div>
+              <h2>
+                히라가나 전체 보기
+              </h2>
 
+              <p>
+                문자를 클릭하면 해당 문자로 이동합니다.
+              </p>
 
-{/* 히라가나 전체 문자표 */}
-<div className="hiragana-table">
+              <div className="hiragana-grid">
 
-  <h2>히라가나 전체 보기</h2>
+                {hiragana.map((item, index) => (
 
-  <p>
-    문자를 클릭하면 해당 문자로 이동합니다.
-  </p>
+                  <button
+                    key={item.character}
+                    className={
+                      index === currentIndex
+                        ? 'hiragana-item active'
+                        : 'hiragana-item'
+                    }
+                    onClick={() =>
+                      setCurrentIndex(index)
+                    }
+                  >
 
-  <div className="hiragana-grid">
+                    <span className="table-character">
+                      {item.character}
+                    </span>
 
-    {hiragana.map((item, index) => (
-      <button
-        key={item.character}
-        className={
-          index === currentIndex
-            ? 'hiragana-item active'
-            : 'hiragana-item'
-        }
-        onClick={() => setCurrentIndex(index)}
-      >
-        <span className="table-character">
-          {item.character}
-        </span>
+                    <span className="table-pronunciation">
+                      {item.pronunciation}
+                    </span>
 
-        <span className="table-pronunciation">
-          {item.pronunciation}
-        </span>
-      </button>
-    ))}
+                  </button>
 
-  </div>
+                ))}
 
-</div>
+              </div>
+
+            </div>
 
           </section>
 
@@ -731,10 +841,15 @@ const nextWordQuiz = () => {
     )
   }
 
-  // 가타카나 학습 화면
+
+  // ============================================================
+  // 가타카나 학습
+  // ============================================================
+
   if (page === 'katakana') {
 
-    const current = katakana[katakanaIndex]
+    const current =
+      katakana[katakanaIndex]
 
     return (
       <div className="app">
@@ -747,7 +862,9 @@ const nextWordQuiz = () => {
 
           <nav>
 
-            <button onClick={() => setPage('home')}>
+            <button
+              onClick={() => setPage('home')}
+            >
               홈
             </button>
 
@@ -767,39 +884,32 @@ const nextWordQuiz = () => {
               ← 홈으로 돌아가기
             </button>
 
-
             <p className="japanese">
               カタカナ
             </p>
 
-
             <h1>
               가타카나 학습
             </h1>
-
 
             <p className="description">
               일본어의 또 다른 기본 문자인 가타카나를 배워봅시다.
             </p>
 
 
-            {/* 가타카나 카드 */}
             <div className="hiragana-card">
 
               <div className="big-character">
                 {current.character}
               </div>
 
-
               <div className="pronunciation">
                 {current.pronunciation}
               </div>
 
-
               <div className="romaji">
                 {current.romaji}
               </div>
-
 
               <div className="example">
 
@@ -824,21 +934,23 @@ const nextWordQuiz = () => {
             </div>
 
 
-            {/* 현재 위치 */}
             <p className="character-count">
               {katakanaIndex + 1} / {katakana.length}
             </p>
 
 
-            {/* 이전 / 다음 */}
             <div className="navigation-buttons">
 
               <button
                 className="next-button"
                 onClick={() => {
+
                   if (katakanaIndex > 0) {
-                    setKatakanaIndex(katakanaIndex - 1)
+                    setKatakanaIndex(
+                      katakanaIndex - 1
+                    )
                   }
+
                 }}
                 disabled={katakanaIndex === 0}
               >
@@ -849,9 +961,17 @@ const nextWordQuiz = () => {
               <button
                 className="next-button"
                 onClick={() => {
-                  if (katakanaIndex < katakana.length - 1) {
-                    setKatakanaIndex(katakanaIndex + 1)
+
+                  if (
+                    katakanaIndex <
+                    katakana.length - 1
+                  ) {
+
+                    setKatakanaIndex(
+                      katakanaIndex + 1
+                    )
                   }
+
                 }}
                 disabled={
                   katakanaIndex === katakana.length - 1
@@ -863,7 +983,6 @@ const nextWordQuiz = () => {
             </div>
 
 
-            {/* 가타카나 전체 문자표 */}
             <div className="hiragana-table">
 
               <h2>
@@ -873,7 +992,6 @@ const nextWordQuiz = () => {
               <p>
                 문자를 클릭하면 해당 문자로 이동합니다.
               </p>
-
 
               <div className="hiragana-grid">
 
@@ -886,7 +1004,9 @@ const nextWordQuiz = () => {
                         ? 'hiragana-item active'
                         : 'hiragana-item'
                     }
-                    onClick={() => setKatakanaIndex(index)}
+                    onClick={() =>
+                      setKatakanaIndex(index)
+                    }
                   >
 
                     <span className="table-character">
@@ -922,228 +1042,235 @@ const nextWordQuiz = () => {
     )
   }
 
-  // 단어 학습 화면
-if (page === 'words') {
 
-  const currentWord = words[wordIndex]
+  // ============================================================
+  // 단어 학습
+  // ============================================================
 
-  return (
-    <div className="app">
+  if (page === 'words') {
 
-      <header className="header">
+    const currentWord =
+      words[wordIndex]
 
-        <div className="logo">
-          🇯🇵 にほんご
-        </div>
+    return (
+      <div className="app">
 
-        <nav>
+        <header className="header">
 
-          <button onClick={() => setPage('home')}>
-            홈
-          </button>
-
-        </nav>
-
-      </header>
-
-
-      <main className="main">
-
-        <section className="word-page">
-
-          <button
-            className="back-button"
-            onClick={() => setPage('home')}
-          >
-            ← 홈으로 돌아가기
-          </button>
-
-
-          <p className="japanese">
-            ことば
-          </p>
-
-
-          <h1>
-            단어 학습
-          </h1>
-
-
-          <p className="description">
-            자주 사용하는 일본어 단어를 배워봅시다.
-          </p>
-
-
-          {/* 단어 카드 */}
-
-          <div className="word-card">
-
-            <div className="word-number">
-              {wordIndex + 1} / {words.length}
-            </div>
-
-
-            <div className="word-japanese">
-              {currentWord.word}
-            </div>
-
-
-            <div className="word-reading">
-              {currentWord.reading}
-            </div>
-
-
-            <div className="word-romaji">
-              {currentWord.romaji}
-            </div>
-
-
-            <div className="word-meaning">
-              {currentWord.meaning}
-            </div>
-
-
-            {/* 예문 */}
-
-            <div className="word-example">
-
-              <h3>
-                예문
-              </h3>
-
-              <div className="example-japanese">
-                {currentWord.example}
-              </div>
-
-              <div className="example-romaji">
-                {currentWord.exampleRomaji}
-              </div>
-
-              <div className="example-meaning">
-                {currentWord.exampleMeaning}
-              </div>
-
-            </div>
-
+          <div className="logo">
+            🇯🇵 にほんご
           </div>
 
-
-          {/* 이전 / 다음 */}
-
-          <div className="navigation-buttons">
+          <nav>
 
             <button
-              className="next-button"
-              onClick={() => {
-                if (wordIndex > 0) {
-                  setWordIndex(wordIndex - 1)
-                }
-              }}
-              disabled={wordIndex === 0}
+              onClick={() => setPage('home')}
             >
-              ← 이전
+              홈
+            </button>
+
+          </nav>
+
+        </header>
+
+
+        <main className="main">
+
+          <section className="word-page">
+
+            <button
+              className="back-button"
+              onClick={() => setPage('home')}
+            >
+              ← 홈으로 돌아가기
             </button>
 
 
-            <button
-              className="next-button"
-              onClick={() => {
+            <p className="japanese">
+              ことば
+            </p>
 
-                if (wordIndex < words.length - 1) {
-                  setWordIndex(wordIndex + 1)
-                }
+            <h1>
+              단어 학습
+            </h1>
 
-              }}
-              disabled={
-                wordIndex === words.length - 1
-              }
-            >
-              다음 →
-            </button>
-
-          </div>
-
-
-          {/* 단어 목록 */}
-
-          <div className="word-list">
-
-            <h2>
-              단어 목록
-            </h2>
-
-            <p>
-              단어를 클릭하면 해당 단어로 이동합니다.
+            <p className="description">
+              자주 사용하는 일본어 단어를 배워봅시다.
             </p>
 
 
-            <div className="word-list-grid">
+            <div className="word-card">
 
-              {words.map((item, index) => (
+              <div className="word-number">
+                {wordIndex + 1} / {words.length}
+              </div>
 
-                <button
-                  key={item.word}
-                  className={
-                    index === wordIndex
-                      ? 'word-list-item active'
-                      : 'word-list-item'
-                  }
-                  onClick={() => setWordIndex(index)}
-                >
+              <div className="word-japanese">
+                {currentWord.word}
+              </div>
 
-                  <span className="list-word">
-                    {item.word}
-                  </span>
+              <div className="word-reading">
+                {currentWord.reading}
+              </div>
 
-                  <span className="list-meaning">
-                    {item.meaning}
-                  </span>
+              <div className="word-romaji">
+                {currentWord.romaji}
+              </div>
 
-                </button>
+              <div className="word-meaning">
+                {currentWord.meaning}
+              </div>
 
-              ))}
+
+              <div className="word-example">
+
+                <h3>
+                  예문
+                </h3>
+
+                <div className="example-japanese">
+                  {currentWord.example}
+                </div>
+
+                <div className="example-romaji">
+                  {currentWord.exampleRomaji}
+                </div>
+
+                <div className="example-meaning">
+                  {currentWord.exampleMeaning}
+                </div>
+
+              </div>
 
             </div>
 
-          </div>
 
-          <div className="word-quiz-start">
+            <div className="navigation-buttons">
 
-  <h2>
-    🎮 단어 퀴즈
-  </h2>
+              <button
+                className="next-button"
+                onClick={() => {
 
-  <p>
-    배운 단어를 퀴즈로 복습해보세요.
-  </p>
+                  if (wordIndex > 0) {
+                    setWordIndex(
+                      wordIndex - 1
+                    )
+                  }
 
-  <button
-    className="quiz-next-button"
-    onClick={startWordQuiz}
-  >
-    단어 퀴즈 시작
-  </button>
-
-</div>
-
-        </section>
-
-      </main>
+                }}
+                disabled={wordIndex === 0}
+              >
+                ← 이전
+              </button>
 
 
-      <footer>
+              <button
+                className="next-button"
+                onClick={() => {
 
-        <p>
-          にほんご 공부 · Japanese Study
-        </p>
+                  if (
+                    wordIndex <
+                    words.length - 1
+                  ) {
 
-      </footer>
+                    setWordIndex(
+                      wordIndex + 1
+                    )
+                  }
 
-    </div>
-  )
-}
+                }}
+                disabled={
+                  wordIndex === words.length - 1
+                }
+              >
+                다음 →
+              </button>
 
-    // 퀴즈 종류 선택 화면
+            </div>
+
+
+            <div className="word-list">
+
+              <h2>
+                단어 목록
+              </h2>
+
+              <p>
+                단어를 클릭하면 해당 단어로 이동합니다.
+              </p>
+
+              <div className="word-list-grid">
+
+                {words.map((item, index) => (
+
+                  <button
+                    key={item.word}
+                    className={
+                      index === wordIndex
+                        ? 'word-list-item active'
+                        : 'word-list-item'
+                    }
+                    onClick={() =>
+                      setWordIndex(index)
+                    }
+                  >
+
+                    <span className="list-word">
+                      {item.word}
+                    </span>
+
+                    <span className="list-meaning">
+                      {item.meaning}
+                    </span>
+
+                  </button>
+
+                ))}
+
+              </div>
+
+            </div>
+
+
+            <div className="word-quiz-start">
+
+              <h2>
+                🎮 단어 퀴즈
+              </h2>
+
+              <p>
+                배운 단어를 퀴즈로 복습해보세요.
+              </p>
+
+              <button
+                className="quiz-next-button"
+                onClick={startWordQuiz}
+              >
+                단어 퀴즈 시작
+              </button>
+
+            </div>
+
+          </section>
+
+        </main>
+
+
+        <footer>
+          <p>
+            にほんご 공부 · Japanese Study
+          </p>
+        </footer>
+
+      </div>
+    )
+  }
+
+
+  // ============================================================
+  // 퀴즈 선택
+  // ============================================================
+
   if (page === 'quizSelect') {
 
     return (
@@ -1179,16 +1306,13 @@ if (page === 'words') {
               ← 홈으로 돌아가기
             </button>
 
-
             <p className="japanese">
               クイズを えらんでください
             </p>
 
-
             <h1>
               퀴즈 선택
             </h1>
-
 
             <p className="description">
               공부하고 싶은 문자를 선택해보세요.
@@ -1197,14 +1321,11 @@ if (page === 'words') {
 
             <div className="quiz-select-grid">
 
-              {/* 히라가나 */}
               <button
                 className="quiz-select-card"
-                onClick={() => {
-                  setQuizType('hiragana')
+                onClick={() =>
                   startQuiz('hiragana')
-
-                }}
+                }
               >
 
                 <div className="select-character">
@@ -1224,14 +1345,11 @@ if (page === 'words') {
               </button>
 
 
-              {/* 가타카나 */}
               <button
                 className="quiz-select-card"
-                onClick={() => {
-                  setQuizType('katakana')
+                onClick={() =>
                   startQuiz('katakana')
-
-                }}
+                }
               >
 
                 <div className="select-character">
@@ -1258,26 +1376,31 @@ if (page === 'words') {
 
 
         <footer>
-
           <p>
             にほんご 공부 · Japanese Study
           </p>
-
         </footer>
 
       </div>
     )
   }
-  
-  // 히라가나 퀴즈 화면
+
+
+  // ============================================================
+  // 문자 퀴즈
+  // ============================================================
+
   if (page === 'quiz') {
 
-    const quizData = getQuizData()
+    const quizData =
+      getQuizData()
 
-    const currentQuiz = quizData[quizCharacterIndex]
+    const currentQuiz =
+      quizData[quizCharacterIndex]
 
     const isCorrect =
-      selectedAnswer === currentQuiz.pronunciation
+      selectedAnswer ===
+      currentQuiz.pronunciation
 
     return (
       <div className="app">
@@ -1290,7 +1413,9 @@ if (page === 'words') {
 
           <nav>
 
-            <button onClick={() => setPage('home')}>
+            <button
+              onClick={() => setPage('home')}
+            >
               홈
             </button>
 
@@ -1312,24 +1437,29 @@ if (page === 'words') {
 
 
             <p className="japanese">
-              ひらがな クイズ
+              {quizType === 'katakana'
+                ? 'カタカナ クイズ'
+                : 'ひらがな クイズ'}
             </p>
 
 
             <h1>
-              히라가나 퀴즈
+              {quizType === 'katakana'
+                ? '가타카나 퀴즈'
+                : '히라가나 퀴즈'}
             </h1>
+
 
             <div className="quiz-progress">
               문제 {quizQuestionCount + 1} / 10
             </div>
+
 
             <div className="quiz-score">
               현재 점수 : {quizScore}점
             </div>
 
 
-            {/* 문제 */}
             <div className="quiz-card">
 
               <p className="quiz-question">
@@ -1346,29 +1476,39 @@ if (page === 'words') {
 
                 {quizOptions.map((option) => {
 
-                  let className = 'quiz-option'
+                  let className =
+                    'quiz-option'
 
-                  if (selectedAnswer !== null) {
+                  if (
+                    selectedAnswer !== null
+                  ) {
 
                     if (
-                      option === currentQuiz.pronunciation
+                      option ===
+                      currentQuiz.pronunciation
                     ) {
-                      className += ' correct'
-                    }
 
-                    else if (
-                      option === selectedAnswer
+                      className +=
+                        ' correct'
+
+                    } else if (
+                      option ===
+                      selectedAnswer
                     ) {
-                      className += ' wrong'
-                    }
 
+                      className +=
+                        ' wrong'
+                    }
                   }
+
 
                   return (
                     <button
                       key={option}
                       className={className}
-                      onClick={() => checkAnswer(option)}
+                      onClick={() =>
+                        checkAnswer(option)
+                      }
                     >
                       {option}
                     </button>
@@ -1379,7 +1519,6 @@ if (page === 'words') {
               </div>
 
 
-              {/* 결과 */}
               {selectedAnswer !== null && (
 
                 <div className="quiz-result">
@@ -1406,7 +1545,8 @@ if (page === 'words') {
                       <p>
                         정답은
                         <strong>
-                          {' '}{currentQuiz.pronunciation}
+                          {' '}
+                          {currentQuiz.pronunciation}
                         </strong>
                         입니다.
                       </p>
@@ -1443,556 +1583,206 @@ if (page === 'words') {
     )
   }
 
-// 단어 퀴즈 결과 화면
-if (page === 'wordQuizResult') {
 
-  return (
-    <div className="app">
+  // ============================================================
+  // 단어 퀴즈
+  // ============================================================
 
-      <header className="header">
+  if (page === 'wordQuiz') {
 
-        <div className="logo">
-          🇯🇵 にほんご
-        </div>
+    const currentWord =
+      words[wordQuizIndex]
 
-        <nav>
+    const isCorrect =
+      wordQuizAnswer ===
+      currentWord.meaning
 
-          <button
-            onClick={() => setPage('home')}
-          >
-            홈
-          </button>
+    return (
+      <div className="app">
 
-        </nav>
+        <header className="header">
 
-      </header>
-
-
-      <main className="main">
-
-        <section className="quiz-result-page">
-
-          <div className="result-icon">
-            🎉
+          <div className="logo">
+            🇯🇵 にほんご
           </div>
 
-
-          <p className="japanese">
-            おつかれさまでした!
-          </p>
-
-
-          <h1>
-            단어 퀴즈 완료!
-          </h1>
-
-
-          <p className="result-description">
-            10문제의 단어 퀴즈가 끝났습니다.
-          </p>
-
-
-          <div className="result-card">
-
-            <div className="result-score">
-
-              <span>
-                맞힌 문제
-              </span>
-
-              <strong>
-                {wordQuizCorrectCount} / 10
-              </strong>
-
-            </div>
-
-
-            <div className="result-score">
-
-              <span>
-                최종 점수
-              </span>
-
-              <strong>
-                {wordQuizScore}점
-              </strong>
-
-            </div>
-
-          </div>
-
-
-          <div className="result-buttons">
+          <nav>
 
             <button
-              className="quiz-next-button"
-              onClick={startWordQuiz}
-            >
-              다시 도전하기
-            </button>
-
-
-            <button
-              className="result-home-button"
               onClick={() => setPage('home')}
             >
-              홈으로 돌아가기
+              홈
             </button>
 
-          </div>
+          </nav>
 
-        </section>
+        </header>
 
-      </main>
 
+        <main className="main">
 
-      <footer>
-
-        <p>
-          にほんご 공부 · Japanese Study
-        </p>
-
-      </footer>
-
-    </div>
-  )
-}
-
-// 일본어 타자 게임 화면
-if (page === 'typing') {
-
-  const currentWord = words[typingIndex]
-
-  return (
-    <div className="app">
-
-      <header className="header">
-
-        <div className="logo">
-          🇯🇵 にほんご
-        </div>
-
-        <nav>
-
-          <button
-            onClick={() => setPage('home')}
-          >
-            홈
-          </button>
-
-        </nav>
-
-      </header>
-
-
-      <main className="main">
-
-        <section className="typing-page">
-
-          <button
-            className="back-button"
-            onClick={() => {
-              setTypingStarted(false)
-              setPage('home')
-            }}
-          >
-            ← 홈으로 돌아가기
-          </button>
-
-
-          <p className="japanese">
-            タイピング
-          </p>
-
-
-          <h1>
-            일본어 타자연습
-          </h1>
-
-
-          <div className="typing-info">
-
-            <div>
-              남은 시간
-              <strong>
-                {typingTime}초
-              </strong>
-            </div>
-
-
-            <div>
-              점수
-              <strong>
-                {typingScore}점
-              </strong>
-            </div>
-
-
-            <div>
-              정답
-              <strong>
-                {typingCorrectCount}개
-              </strong>
-            </div>
-
-          </div>
-
-
-          <div className="typing-card">
-
-            <p className="typing-guide">
-              아래 일본어를 로마자로 입력하세요.
-            </p>
-
-
-            <div className="typing-japanese">
-              {currentWord.word}
-            </div>
-
-
-            <div className="typing-reading">
-              {currentWord.reading}
-            </div>
-
-
-            <div className="typing-romaji">
-              {currentWord.romaji}
-            </div>
-
-
-            <input
-              className="typing-input"
-              type="text"
-              value={typingInput}
-              onChange={(event) =>
-                checkTypingAnswer(event.target.value)
-              }
-              autoFocus
-              placeholder="로마자를 입력하세요"
-            />
-
-
-            <p className="typing-hint">
-              예: ねこ → neko
-            </p>
-
-          </div>
-
-        </section>
-
-      </main>
-
-
-      <footer>
-
-        <p>
-          にほんご 공부 · Japanese Study
-        </p>
-
-      </footer>
-
-    </div>
-  )
-}
-
-if (page === 'typingResult') {
-
-  return (
-    <div className="app">
-
-      <header className="header">
-
-        <div className="logo">
-          🇯🇵 にほんご
-        </div>
-
-        <nav>
-
-          <button
-            onClick={() => setPage('home')}
-          >
-            홈
-          </button>
-
-        </nav>
-
-      </header>
-
-
-      <main className="main">
-
-        <section className="typing-result-page">
-
-          <div className="result-icon">
-            🎉
-          </div>
-
-          <p className="japanese">
-            おつかれさまでした!
-          </p>
-
-          <h1>
-            타자연습 완료!
-          </h1>
-
-          <p className="result-description">
-            60초 동안 열심히 입력했어요!
-          </p>
-
-
-          <div className="result-card">
-
-            <div className="result-score">
-
-              <span>
-                최종 점수
-              </span>
-
-              <strong>
-                {typingScore}점
-              </strong>
-
-            </div>
-
-
-            <div className="result-score">
-
-              <span>
-                맞힌 단어
-              </span>
-
-              <strong>
-                {typingCorrectCount}개
-              </strong>
-
-            </div>
-
-          </div>
-
-
-          <div className="result-buttons">
+          <section className="quiz-page">
 
             <button
-              className="quiz-next-button"
-              onClick={startTypingGame}
+              className="back-button"
+              onClick={() => setPage('words')}
             >
-              다시 도전하기
+              ← 단어 학습으로
             </button>
 
 
-            <button
-              className="result-home-button"
-              onClick={() => setPage('home')}
-            >
-              홈으로 돌아가기
-            </button>
-
-          </div>
-
-        </section>
-
-      </main>
-
-
-      <footer>
-
-        <p>
-          にほんご 공부 · Japanese Study
-        </p>
-
-      </footer>
-
-    </div>
-  )
-}
-
-// 단어 퀴즈 화면
-if (page === 'wordQuiz') {
-
-  const currentWord = words[wordQuizIndex]
-
-  const isCorrect =
-    wordQuizAnswer === currentWord.meaning
-
-
-  return (
-    <div className="app">
-
-      <header className="header">
-
-        <div className="logo">
-          🇯🇵 にほんご
-        </div>
-
-        <nav>
-
-          <button
-            onClick={() => setPage('home')}
-          >
-            홈
-          </button>
-
-        </nav>
-
-      </header>
-
-
-      <main className="main">
-
-        <section className="quiz-page">
-
-          <button
-            className="back-button"
-            onClick={() => setPage('words')}
-          >
-            ← 단어 학습으로
-          </button>
-
-
-          <p className="japanese">
-            ことば クイズ
-          </p>
-
-
-          <h1>
-            단어 퀴즈
-          </h1>
-
-
-          <div className="quiz-progress">
-            문제 {wordQuizQuestionCount + 1} / 10
-          </div>
-
-
-          <div className="quiz-score">
-            현재 점수 : {wordQuizScore}점
-          </div>
-
-
-          <div className="quiz-card">
-
-            <p className="quiz-question">
-              다음 단어의 뜻은?
+            <p className="japanese">
+              ことば クイズ
             </p>
 
+            <h1>
+              단어 퀴즈
+            </h1>
 
-            <div className="quiz-character">
-              {currentWord.word}
+
+            <div className="quiz-progress">
+              문제 {wordQuizQuestionCount + 1} / 10
             </div>
 
 
-            <div className="word-quiz-reading">
-              {currentWord.reading}
+            <div className="quiz-score">
+              현재 점수 : {wordQuizScore}점
             </div>
 
 
-            <div className="word-quiz-options">
+            <div className="quiz-card">
 
-              {wordQuizOptions.map((option) => {
+              <p className="quiz-question">
+                다음 단어의 뜻은?
+              </p>
 
-                let className = 'quiz-option'
+
+              <div className="quiz-character">
+                {currentWord.word}
+              </div>
 
 
-                if (wordQuizAnswer !== null) {
+              <div className="word-quiz-reading">
+                {currentWord.reading}
+              </div>
+
+
+              <div className="word-quiz-options">
+
+                {wordQuizOptions.map((option) => {
+
+                  let className =
+                    'quiz-option'
 
                   if (
-                    option === currentWord.meaning
+                    wordQuizAnswer !== null
                   ) {
-                    className += ' correct'
-                  }
 
-                  else if (
-                    option === wordQuizAnswer
-                  ) {
-                    className += ' wrong'
-                  }
+                    if (
+                      option ===
+                      currentWord.meaning
+                    ) {
 
-                }
+                      className +=
+                        ' correct'
 
+                    } else if (
+                      option ===
+                      wordQuizAnswer
+                    ) {
 
-                return (
-                  <button
-                    key={option}
-                    className={className}
-                    onClick={() =>
-                      checkWordQuizAnswer(option)
+                      className +=
+                        ' wrong'
                     }
-                  >
-                    {option}
-                  </button>
-                )
-
-              })}
-
-            </div>
+                  }
 
 
-            {wordQuizAnswer !== null && (
+                  return (
+                    <button
+                      key={option}
+                      className={className}
+                      onClick={() =>
+                        checkWordQuizAnswer(option)
+                      }
+                    >
+                      {option}
+                    </button>
+                  )
 
-              <div className="quiz-result">
-
-                {isCorrect ? (
-
-                  <>
-                    <div className="correct-text">
-                      🎉 정답입니다!
-                    </div>
-
-                    <p>
-                      잘했어요!
-                    </p>
-                  </>
-
-                ) : (
-
-                  <>
-                    <div className="wrong-text">
-                      😢 아쉬워요!
-                    </div>
-
-                    <p>
-                      정답은
-                      <strong>
-                        {' '}{currentWord.meaning}
-                      </strong>
-                      입니다.
-                    </p>
-                  </>
-
-                )}
-
-
-                <button
-                  className="quiz-next-button"
-                  onClick={nextWordQuiz}
-                >
-                  다음 문제 →
-                </button>
+                })}
 
               </div>
 
-            )}
 
-          </div>
+              {wordQuizAnswer !== null && (
 
-        </section>
+                <div className="quiz-result">
 
-      </main>
+                  {isCorrect ? (
+
+                    <>
+                      <div className="correct-text">
+                        🎉 정답입니다!
+                      </div>
+
+                      <p>
+                        잘했어요!
+                      </p>
+                    </>
+
+                  ) : (
+
+                    <>
+                      <div className="wrong-text">
+                        😢 아쉬워요!
+                      </div>
+
+                      <p>
+                        정답은
+                        <strong>
+                          {' '}
+                          {currentWord.meaning}
+                        </strong>
+                        입니다.
+                      </p>
+                    </>
+
+                  )}
 
 
-      <footer>
+                  <button
+                    className="quiz-next-button"
+                    onClick={nextWordQuiz}
+                  >
+                    다음 문제 →
+                  </button>
 
-        <p>
-          にほんご 공부 · Japanese Study
-        </p>
+                </div>
 
-      </footer>
+              )}
 
-    </div>
-  )
-}
+            </div>
 
-  // 퀴즈 결과 화면
+          </section>
+
+        </main>
+
+
+        <footer>
+          <p>
+            にほんご 공부 · Japanese Study
+          </p>
+        </footer>
+
+      </div>
+    )
+  }
+
+
+  // ============================================================
+  // 문자 퀴즈 결과
+  // ============================================================
+
   if (page === 'quizResult') {
 
     return (
@@ -2025,10 +1815,10 @@ if (page === 'wordQuiz') {
               🎉
             </div>
 
-
             <p className="japanese">
               おつかれさまでした!
             </p>
+
 
             <h1>
               {quizType === 'katakana'
@@ -2038,7 +1828,7 @@ if (page === 'wordQuiz') {
 
 
             <p className="result-description">
-              10문제의 히라가나 퀴즈가 끝났습니다.
+              10문제의 퀴즈가 끝났습니다.
             </p>
 
 
@@ -2076,7 +1866,9 @@ if (page === 'wordQuiz') {
 
               <button
                 className="quiz-next-button"
-                onClick={startQuiz}
+                onClick={() =>
+                  startQuiz(quizType)
+                }
               >
                 다시 도전하기
               </button>
@@ -2084,7 +1876,9 @@ if (page === 'wordQuiz') {
 
               <button
                 className="result-home-button"
-                onClick={() => setPage('home')}
+                onClick={() =>
+                  setPage('home')
+                }
               >
                 홈으로 돌아가기
               </button>
@@ -2097,17 +1891,408 @@ if (page === 'wordQuiz') {
 
 
         <footer>
-
           <p>
             にほんご 공부 · Japanese Study
           </p>
-
         </footer>
 
       </div>
     )
   }
 
+
+  // ============================================================
+  // 단어 퀴즈 결과
+  // ============================================================
+
+  if (page === 'wordQuizResult') {
+
+    return (
+      <div className="app">
+
+        <header className="header">
+
+          <div className="logo">
+            🇯🇵 にほんご
+          </div>
+
+          <nav>
+
+            <button
+              onClick={() => setPage('home')}
+            >
+              홈
+            </button>
+
+          </nav>
+
+        </header>
+
+
+        <main className="main">
+
+          <section className="quiz-result-page">
+
+            <div className="result-icon">
+              🎉
+            </div>
+
+            <p className="japanese">
+              おつかれさまでした!
+            </p>
+
+
+            <h1>
+              단어 퀴즈 완료!
+            </h1>
+
+
+            <p className="result-description">
+              10문제의 단어 퀴즈가 끝났습니다.
+            </p>
+
+
+            <div className="result-card">
+
+              <div className="result-score">
+
+                <span>
+                  맞힌 문제
+                </span>
+
+                <strong>
+                  {wordQuizCorrectCount} / 10
+                </strong>
+
+              </div>
+
+
+              <div className="result-score">
+
+                <span>
+                  최종 점수
+                </span>
+
+                <strong>
+                  {wordQuizScore}점
+                </strong>
+
+              </div>
+
+            </div>
+
+
+            <div className="result-buttons">
+
+              <button
+                className="quiz-next-button"
+                onClick={startWordQuiz}
+              >
+                다시 도전하기
+              </button>
+
+
+              <button
+                className="result-home-button"
+                onClick={() =>
+                  setPage('home')
+                }
+              >
+                홈으로 돌아가기
+              </button>
+
+            </div>
+
+          </section>
+
+        </main>
+
+
+        <footer>
+          <p>
+            にほんご 공부 · Japanese Study
+          </p>
+        </footer>
+
+      </div>
+    )
+  }
+
+
+  // ============================================================
+  // 타자연습
+  // ============================================================
+
+  if (page === 'typing') {
+
+    const currentWord =
+      words[typingIndex]
+
+    return (
+      <div className="app">
+
+        <header className="header">
+
+          <div className="logo">
+            🇯🇵 にほんご
+          </div>
+
+          <nav>
+
+            <button
+              onClick={() => {
+                setTypingStarted(false)
+                setPage('home')
+              }}
+            >
+              홈
+            </button>
+
+          </nav>
+
+        </header>
+
+
+        <main className="main">
+
+          <section className="typing-page">
+
+            <button
+              className="back-button"
+              onClick={() => {
+                setTypingStarted(false)
+                setPage('home')
+              }}
+            >
+              ← 홈으로 돌아가기
+            </button>
+
+
+            <p className="japanese">
+              タイピング
+            </p>
+
+
+            <h1>
+              일본어 타자연습
+            </h1>
+
+
+            <div className="typing-info">
+
+              <div>
+                남은 시간
+
+                <strong>
+                  {typingTime}초
+                </strong>
+              </div>
+
+
+              <div>
+                점수
+
+                <strong>
+                  {typingScore}점
+                </strong>
+              </div>
+
+
+              <div>
+                정답
+
+                <strong>
+                  {typingCorrectCount}개
+                </strong>
+              </div>
+
+            </div>
+
+
+            <div className="typing-card">
+
+              <p className="typing-guide">
+                아래 일본어를 로마자로 입력하세요.
+              </p>
+
+
+              <div className="typing-japanese">
+                {currentWord.word}
+              </div>
+
+
+              <div className="typing-reading">
+                {currentWord.reading}
+              </div>
+
+
+              {typingFeedback && (
+
+                <div className="typing-feedback">
+                  {typingFeedback}
+                </div>
+
+              )}
+
+
+              <input
+                className="typing-input"
+                type="text"
+                value={typingInput}
+                onChange={(event) =>
+                  checkTypingAnswer(
+                    event.target.value
+                  )
+                }
+                autoFocus
+                placeholder="로마자를 입력하세요"
+              />
+
+
+              <p className="typing-hint">
+                예: ねこ → neko
+              </p>
+
+            </div>
+
+          </section>
+
+        </main>
+
+
+        <footer>
+          <p>
+            にほんご 공부 · Japanese Study
+          </p>
+        </footer>
+
+      </div>
+    )
+  }
+
+
+  // ============================================================
+  // 타자연습 결과
+  // ============================================================
+
+  if (page === 'typingResult') {
+
+    return (
+      <div className="app">
+
+        <header className="header">
+
+          <div className="logo">
+            🇯🇵 にほんご
+          </div>
+
+          <nav>
+
+            <button
+              onClick={() =>
+                setPage('home')
+              }
+            >
+              홈
+            </button>
+
+          </nav>
+
+        </header>
+
+
+        <main className="main">
+
+          <section className="typing-result-page">
+
+            <div className="result-icon">
+              🎉
+            </div>
+
+
+            <p className="japanese">
+              おつかれさまでした!
+            </p>
+
+
+            <h1>
+              타자연습 완료!
+            </h1>
+
+
+            <p className="result-description">
+              60초 동안 열심히 입력했어요!
+            </p>
+
+
+            <div className="result-card">
+
+              <div className="result-score">
+
+                <span>
+                  최종 점수
+                </span>
+
+                <strong>
+                  {typingScore}점
+                </strong>
+
+              </div>
+
+
+              <div className="result-score">
+
+                <span>
+                  맞힌 단어
+                </span>
+
+                <strong>
+                  {typingCorrectCount}개
+                </strong>
+
+              </div>
+
+            </div>
+
+
+            <div className="result-buttons">
+
+              <button
+                className="quiz-next-button"
+                onClick={startTypingGame}
+              >
+                다시 도전하기
+              </button>
+
+
+              <button
+                className="result-home-button"
+                onClick={() =>
+                  setPage('home')
+                }
+              >
+                홈으로 돌아가기
+              </button>
+
+            </div>
+
+          </section>
+
+        </main>
+
+
+        <footer>
+          <p>
+            にほんご 공부 · Japanese Study
+          </p>
+        </footer>
+
+      </div>
+    )
+  }
+
+
+  // 모든 페이지에 해당하지 않을 경우
   return null
 }
 
