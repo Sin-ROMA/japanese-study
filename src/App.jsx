@@ -53,7 +53,11 @@ function App() {
   const [typingTime, setTypingTime] = useState(60)
   const [typingStarted, setTypingStarted] = useState(false)
   const [typingCorrectCount, setTypingCorrectCount] = useState(0)
+  const [typingTotalCount, setTypingTotalCount] = useState(0)
   const [typingFeedback, setTypingFeedback] = useState('')
+  const [typingLevel, setTypingLevel] = useState(null)
+  const [typingWrongCount, setTypingWrongCount] = useState(0)
+  const [typingWrong, setTypingWrong] = useState(false)
 
 
   // =========================
@@ -289,20 +293,36 @@ function App() {
   // 타자연습 시작
   // =========================
 
-  const startTypingGame = () => {
+  const startTypingGame = (level) => {
 
-    const randomIndex = Math.floor(
-      Math.random() * words.length
+    const levelWords = words.filter(
+      (word) => word.level === level
     )
 
-    setTypingIndex(randomIndex)
+    if (levelWords.length === 0) {
+      return
+    }
+
+    const randomIndex = Math.floor(
+      Math.random() * levelWords.length
+    )
+
+    const selectedWord =
+      levelWords[randomIndex]
+
+    setTypingLevel(level)
+    setTypingIndex(
+      words.indexOf(selectedWord)
+    )
     setTypingInput('')
     setTypingScore(0)
     setTypingTime(60)
     setTypingStarted(true)
     setTypingCorrectCount(0)
+    setTypingTotalCount(0)
+    setTypingWrongCount(0)
+    setTypingWrong(false)
     setTypingFeedback('')
-
     setPage('typing')
   }
 
@@ -313,70 +333,94 @@ function App() {
 
   const checkTypingAnswer = (value) => {
 
-    const currentWord = words[typingIndex]
+    if (typingWrong) {
+    return
+  }
 
-    const answer =
-      currentWord.romaji.toLowerCase()
+  const currentWord = words[typingIndex]
 
-    const input =
-      value.toLowerCase()
+  const answer =
+    currentWord.romaji.toLowerCase()
 
-    setTypingInput(value)
+  const input =
+    value.trim().toLowerCase()
 
-
-    // -------------------------
-    // 정답
-    // -------------------------
-
-    if (input === answer) {
-
-      setTypingScore(
-        (score) => score + 10
-      )
-
-      setTypingCorrectCount(
-        (count) => count + 1
-      )
-
-      setTypingFeedback('+10점! 🎉')
-
-      setTimeout(() => {
-        setTypingFeedback('')
-      }, 700)
+  setTypingInput(value)
 
 
-      const nextIndex = Math.floor(
-        Math.random() * words.length
-      )
+  // =========================
+  // 정답
+  // =========================
 
-      setTypingIndex(nextIndex)
-      setTypingInput('')
+  if (input === answer) {
 
-      return
-    }
+    setTypingWrong(false)
 
+    setTypingTotalCount(
+      (count) => count + 1
+    )
+    
+    setTypingScore(
+      (score) => score + 10
+    )
 
-    // -------------------------
-    // 아직 올바르게 입력 중
-    // -------------------------
+    setTypingCorrectCount(
+      (count) => count + 1
+    )
 
-    if (
-      input.length === 0 ||
-      answer.startsWith(input)
-    ) {
+    setTypingFeedback(
+      '+10점! 🎉'
+    )
+
+    setTimeout(() => {
 
       setTypingFeedback('')
 
-      return
-    }
+      const levelWords = words.filter(
+        (word) => word.level === typingLevel
+      )
 
+      const randomIndex = Math.floor(
+        Math.random() * levelWords.length
+      )
 
-    // -------------------------
-    // 잘못 입력
-    // -------------------------
+      const nextWord =
+        levelWords[randomIndex]
 
-    setTypingFeedback('❌ 다시 입력해보세요!')
+      setTypingIndex(
+        words.indexOf(nextWord)
+      )
+
+      setTypingInput('')
+
+    }, 700)
+
+    return
   }
+
+
+  // =========================
+  // 오답
+  // =========================
+
+  if (!typingWrong) {
+
+  setTypingWrongCount(
+    (count) => count + 1
+  )
+
+  setTypingTotalCount(
+    (count) => count + 1
+  )
+
+  setTypingWrong(true)
+}
+
+setTypingFeedback(
+  `❌ 오답입니다! 정답: ${currentWord.romaji}`
+)
+
+}
 
 
   // =========================
@@ -614,7 +658,7 @@ function App() {
 
               <button
                 className="start-button"
-                onClick={startTypingGame}
+                onClick={() => setPage('typingDifficulty')}
               >
                 ⌨️ 타자연습 시작
               </button>
@@ -1797,7 +1841,9 @@ function App() {
           <nav>
 
             <button
-              onClick={() => setPage('home')}
+              onClick={() =>
+                setPage('home')
+              }
             >
               홈
             </button>
@@ -1819,18 +1865,15 @@ function App() {
               おつかれさまでした!
             </p>
 
-
             <h1>
               {quizType === 'katakana'
                 ? '가타카나 퀴즈 완료!'
                 : '히라가나 퀴즈 완료!'}
             </h1>
 
-
             <p className="result-description">
               10문제의 퀴즈가 끝났습니다.
             </p>
-
 
             <div className="result-card">
 
@@ -1846,7 +1889,6 @@ function App() {
 
               </div>
 
-
               <div className="result-score">
 
                 <span>
@@ -1861,7 +1903,6 @@ function App() {
 
             </div>
 
-
             <div className="result-buttons">
 
               <button
@@ -1872,7 +1913,6 @@ function App() {
               >
                 다시 도전하기
               </button>
-
 
               <button
                 className="result-home-button"
@@ -1941,16 +1981,13 @@ function App() {
               おつかれさまでした!
             </p>
 
-
             <h1>
               단어 퀴즈 완료!
             </h1>
 
-
             <p className="result-description">
               10문제의 단어 퀴즈가 끝났습니다.
             </p>
-
 
             <div className="result-card">
 
@@ -1966,7 +2003,6 @@ function App() {
 
               </div>
 
-
               <div className="result-score">
 
                 <span>
@@ -1981,7 +2017,6 @@ function App() {
 
             </div>
 
-
             <div className="result-buttons">
 
               <button
@@ -1990,7 +2025,6 @@ function App() {
               >
                 다시 도전하기
               </button>
-
 
               <button
                 className="result-home-button"
@@ -2012,6 +2046,222 @@ function App() {
           <p>
             にほんご 공부 · Japanese Study
           </p>
+        </footer>
+
+      </div>
+    )
+  }
+
+
+  // ============================================================
+  // JLPT 타자연습 급수 선택
+  // ============================================================
+
+  if (page === 'typingDifficulty') {
+
+    return (
+      <div className="app">
+
+        <header className="header">
+
+          <div className="logo">
+            🇯🇵 にほんご
+          </div>
+
+          <nav>
+
+            <button
+              onClick={() => setPage('home')}
+            >
+              홈
+            </button>
+
+          </nav>
+
+        </header>
+
+
+        <main className="main">
+
+          <section className="typing-difficulty-page">
+
+            <button
+              className="back-button"
+              onClick={() => setPage('home')}
+            >
+              ← 홈으로 돌아가기
+            </button>
+
+
+            <p className="japanese">
+              JLPT タイピング
+            </p>
+
+
+            <h1>
+              JLPT 급수 선택
+            </h1>
+
+
+            <p className="difficulty-description">
+              연습하고 싶은 JLPT 급수를 선택하세요.
+            </p>
+
+
+            <div className="difficulty-grid">
+
+              {/* N5 */}
+
+              <button
+                className="difficulty-card"
+                onClick={() =>
+                  startTypingGame('N5')
+                }
+              >
+
+                <div className="difficulty-icon">
+                  N5
+                </div>
+
+                <h2>
+                  JLPT N5
+                </h2>
+
+                <p>
+                  가장 기초적인 일본어 단어
+                </p>
+
+                <span>
+                  초급
+                </span>
+
+              </button>
+
+
+              {/* N4 */}
+
+              <button
+                className="difficulty-card"
+                onClick={() =>
+                  startTypingGame('N4')
+                }
+              >
+
+                <div className="difficulty-icon">
+                  N4
+                </div>
+
+                <h2>
+                  JLPT N4
+                </h2>
+
+                <p>
+                  기본적인 일본어 단어
+                </p>
+
+                <span>
+                  초급
+                </span>
+
+              </button>
+
+
+              {/* N3 */}
+
+              <button
+                className="difficulty-card"
+                onClick={() =>
+                  startTypingGame('N3')
+                }
+              >
+
+                <div className="difficulty-icon">
+                  N3
+                </div>
+
+                <h2>
+                  JLPT N3
+                </h2>
+
+                <p>
+                  일상생활에서 사용하는 단어
+                </p>
+
+                <span>
+                  중급
+                </span>
+
+              </button>
+
+
+              {/* N2 */}
+
+              <button
+                className="difficulty-card"
+                onClick={() =>
+                  startTypingGame('N2')
+                }
+              >
+
+                <div className="difficulty-icon">
+                  N2
+                </div>
+
+                <h2>
+                  JLPT N2
+                </h2>
+
+                <p>
+                  조금 더 어려운 일본어 단어
+                </p>
+
+                <span>
+                  중상급
+                </span>
+
+              </button>
+
+
+              {/* N1 */}
+
+              <button
+                className="difficulty-card"
+                onClick={() =>
+                  startTypingGame('N1')
+                }
+              >
+
+                <div className="difficulty-icon">
+                  N1
+                </div>
+
+                <h2>
+                  JLPT N1
+                </h2>
+
+                <p>
+                  높은 수준의 일본어 단어
+                </p>
+
+                <span>
+                  고급
+                </span>
+
+              </button>
+
+            </div>
+
+          </section>
+
+        </main>
+
+
+        <footer>
+
+          <p>
+            にほんご 공부 · Japanese Study
+          </p>
+
         </footer>
 
       </div>
@@ -2078,41 +2328,58 @@ function App() {
             </h1>
 
 
-            <div className="typing-info">
+           <div className="typing-info">
 
-              <div>
-                남은 시간
+  <div>
 
-                <strong>
-                  {typingTime}초
-                </strong>
-              </div>
+    급수
 
+    <strong>
+      {typingLevel}
+    </strong>
 
-              <div>
-                점수
-
-                <strong>
-                  {typingScore}점
-                </strong>
-              </div>
+  </div>
 
 
-              <div>
-                정답
+  <div>
 
-                <strong>
-                  {typingCorrectCount}개
-                </strong>
-              </div>
+    남은 시간
 
-            </div>
+    <strong>
+      {typingTime}초
+    </strong>
+
+  </div>
+
+
+  <div>
+
+    점수
+
+    <strong>
+      {typingScore}점
+    </strong>
+
+  </div>
+
+
+  <div>
+
+    정답
+
+    <strong>
+      {typingCorrectCount}개
+    </strong>
+
+  </div>
+
+</div>
 
 
             <div className="typing-card">
 
               <p className="typing-guide">
-                아래 일본어를 로마자로 입력하세요.
+                아래 일본어를 로마자로 입력한 후 Enter를 눌러주세요.
               </p>
 
 
@@ -2128,11 +2395,77 @@ function App() {
 
               {typingFeedback && (
 
-                <div className="typing-feedback">
-                  {typingFeedback}
-                </div>
+  <div className="typing-feedback">
 
-              )}
+    {typingFeedback}
+
+    {typingWrong && (
+
+      <div className="typing-wrong-detail">
+
+        <p>
+          입력한 답 :
+          <strong>
+            {' '}
+            {typingInput}
+          </strong>
+        </p>
+
+        <p>
+          정답 :
+          <strong>
+            {' '}
+            {currentWord.romaji}
+          </strong>
+        </p>
+
+        <p>
+          뜻 :
+          <strong>
+            {' '}
+            {currentWord.meaning}
+          </strong>
+        </p>
+
+
+        <button
+          className="quiz-next-button"
+          onClick={() => {
+
+            const levelWords = words.filter(
+              (word) =>
+                word.level === typingLevel
+            )
+
+            const randomIndex =
+              Math.floor(
+                Math.random() *
+                levelWords.length
+              )
+
+            const nextWord =
+              levelWords[randomIndex]
+
+            setTypingIndex(
+              words.indexOf(nextWord)
+            )
+
+            setTypingInput('')
+            setTypingFeedback('')
+            setTypingWrong(false)
+
+          }}
+        >
+          다음 문제 →
+        </button>
+
+      </div>
+
+    )}
+
+  </div>
+
+)}
 
 
               <input
@@ -2140,17 +2473,20 @@ function App() {
                 type="text"
                 value={typingInput}
                 onChange={(event) =>
-                  checkTypingAnswer(
-                    event.target.value
-                  )
+                  setTypingInput(event.target.value)
                 }
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter') {
+                    checkTypingAnswer(typingInput)
+                  }
+                }}
                 autoFocus
                 placeholder="로마자를 입력하세요"
               />
 
 
               <p className="typing-hint">
-                예: ねこ → neko
+                예: ねこ → neko → Enter
               </p>
 
             </div>
@@ -2161,9 +2497,11 @@ function App() {
 
 
         <footer>
+
           <p>
             にほんご 공부 · Japanese Study
           </p>
+
         </footer>
 
       </div>
@@ -2221,45 +2559,87 @@ function App() {
 
 
             <p className="result-description">
-              60초 동안 열심히 입력했어요!
-            </p>
+  60초 동안 열심히 입력했어요!
+</p>
+
+<div className="typing-result-level">
+  JLPT {typingLevel}
+</div>
 
 
             <div className="result-card">
 
-              <div className="result-score">
+  <div className="result-score">
 
-                <span>
-                  최종 점수
-                </span>
+    <span>
+      선택한 급수
+    </span>
 
-                <strong>
-                  {typingScore}점
-                </strong>
+    <strong>
+      {typingLevel}
+    </strong>
 
-              </div>
+  </div>
 
 
-              <div className="result-score">
+  <div className="result-score">
 
-                <span>
-                  맞힌 단어
-                </span>
+    <span>
+      최종 점수
+    </span>
 
-                <strong>
-                  {typingCorrectCount}개
-                </strong>
+    <strong>
+      {typingScore}점
+    </strong>
 
-              </div>
+  </div>
 
-            </div>
+
+  <div className="result-score">
+
+    <span>
+      맞힌 단어
+    </span>
+
+    <strong>
+      {typingCorrectCount}개
+    </strong>
+  </div>
+
+  <div className="result-score">
+  <span>
+    틀린 단어
+  </span>
+
+  <strong>
+    {typingWrongCount}개
+  </strong>
+</div>
+
+  <div className="result-score">
+  <span>
+    정답률
+  </span>
+
+  <strong>
+    {typingTotalCount > 0
+      ? `${Math.round(
+          (typingCorrectCount / typingTotalCount) * 100
+        )}%`
+      : '0%'}
+  </strong>
+</div>
+
+</div>
 
 
             <div className="result-buttons">
 
               <button
                 className="quiz-next-button"
-                onClick={startTypingGame}
+                onClick={() =>
+                  startTypingGame(typingLevel)
+                }
               >
                 다시 도전하기
               </button>
@@ -2282,9 +2662,11 @@ function App() {
 
 
         <footer>
+
           <p>
             にほんご 공부 · Japanese Study
           </p>
+
         </footer>
 
       </div>
@@ -2293,6 +2675,7 @@ function App() {
 
 
   // 모든 페이지에 해당하지 않을 경우
+
   return null
 }
 
