@@ -12,6 +12,8 @@ function App() {
 
   const [page, setPage] = useState('home')
 
+  console.log('현재 page:', page)
+
   // =========================
   // 히라가나 / 가타카나 / 단어
   // =========================
@@ -19,6 +21,35 @@ function App() {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [katakanaIndex, setKatakanaIndex] = useState(0)
   const [wordIndex, setWordIndex] = useState(0)
+  const [wordLevel, setWordLevel] = useState(null)
+
+  const [wordProgress, setWordProgress] = useState(() => {
+  const saved = localStorage.getItem('wordProgress')
+
+  return saved
+    ? JSON.parse(saved)
+    : {}
+})
+
+useEffect(() => {
+
+  if (wordLevel === null) {
+    return
+  }
+
+  const newProgress = {
+    ...wordProgress,
+    [wordLevel]: wordIndex
+  }
+
+  setWordProgress(newProgress)
+
+  localStorage.setItem(
+    'wordProgress',
+    JSON.stringify(newProgress)
+  )
+
+}, [wordLevel, wordIndex])
 
   // =========================
   // 문자 퀴즈
@@ -1093,10 +1124,120 @@ setTypingFeedback(
 
   if (page === 'words') {
 
-    const currentWord =
-      words[wordIndex]
-
+  if (wordLevel === null) {
     return (
+      <div className="app">
+
+        <header className="header">
+
+          <div className="logo">
+            🇯🇵 にほんご
+          </div>
+
+          <nav>
+
+            <button
+              onClick={() => setPage('home')}
+            >
+              홈
+            </button>
+
+          </nav>
+
+        </header>
+
+        <main className="main">
+
+          <section className="word-page">
+
+            <button
+              className="back-button"
+              onClick={() => setPage('home')}
+            >
+              ← 홈으로 돌아가기
+            </button>
+
+            <p className="japanese">
+              ことば
+            </p>
+
+            <h1>
+              단어 학습
+            </h1>
+
+            <p>
+              학습할 JLPT 레벨을 선택해주세요.
+            </p>
+
+            <div className="level-buttons">
+
+              <button
+                className={wordLevel === 'N5' ? 'active' : ''}
+                onClick={() => {
+                  setWordLevel('N5')
+                  setWordIndex(wordProgress['N5'] ?? 0)
+                }}
+              >
+                N5
+              </button>
+
+              <button
+                className={wordLevel === 'N4' ? 'active' : ''}
+                onClick={() => {
+                  setWordLevel('N4')
+                  setWordIndex(wordProgress['N4'] ?? 0)
+                }}
+              >
+                N4
+              </button>
+
+              <button
+                className={wordLevel === 'N3' ? 'active' : ''}
+                onClick={() => {
+                  setWordLevel('N3')
+                  setWordIndex(wordProgress['N3'] ?? 0)
+                }}
+              >
+                N3
+              </button>
+
+              <button
+                className={wordLevel === 'N2' ? 'active' : ''}
+                onClick={() => {
+                  setWordLevel('N2')
+                  setWordIndex(wordProgress['N2'] ?? 0)
+                }}
+              >
+                N2
+              </button>
+
+              <button
+                className={wordLevel === 'N1' ? 'active' : ''}
+                onClick={() => {
+                  setWordLevel('N1')
+                  setWordIndex(wordProgress['N1'] ?? 0)
+                }}
+              >
+                N1
+              </button>
+
+            </div>
+
+          </section>
+
+        </main>
+
+      </div>
+    )
+  }
+
+  const levelWords =
+    words.filter((word) => word.level === wordLevel)
+
+  const currentWord =
+    levelWords[wordIndex]
+
+  return (
       <div className="app">
 
         <header className="header">
@@ -1142,11 +1283,65 @@ setTypingFeedback(
               자주 사용하는 일본어 단어를 배워봅시다.
             </p>
 
+            <div className="word-level-buttons">
+
+  <button
+   className={wordLevel === 'N5' ? 'active' : ''}
+    onClick={() => {
+      setWordLevel('N5')
+      setWordIndex(wordProgress['N5'] ?? 0)
+    }}
+  >
+    N5
+  </button>
+
+  <button
+    className={wordLevel === 'N4' ? 'active' : ''}
+    onClick={() => {
+      setWordLevel('N4')
+      setWordIndex(wordProgress['N4'] ?? 0)
+    }}
+  >
+    N4
+  </button>
+
+  <button
+    className={wordLevel === 'N3' ? 'active' : ''}
+    onClick={() => {
+      setWordLevel('N3')
+      setWordIndex(wordProgress['N3'] ?? 0)
+    }}
+  >
+    N3
+  </button>
+
+  <button
+    className={wordLevel === 'N2' ? 'active' : ''}
+    onClick={() => {
+      setWordLevel('N2')
+      setWordIndex(wordProgress['N2'] ?? 0)
+    }}
+  >
+    N2
+  </button>
+
+  <button
+    className={wordLevel === 'N1' ? 'active' : ''}
+    onClick={() => {
+      setWordLevel('N1')
+      setWordIndex(wordProgress['N1'] ?? 0)
+    }}
+  >
+    N1
+  </button>
+
+</div>
+
 
             <div className="word-card">
 
               <div className="word-number">
-                {wordIndex + 1} / {words.length}
+                {wordIndex + 1} / {levelWords.length}
               </div>
 
               <div className="word-japanese">
@@ -1214,17 +1409,17 @@ setTypingFeedback(
 
                   if (
                     wordIndex <
-                    words.length - 1
+                    levelWords.length - 1
                   ) {
 
-                    setWordIndex(
-                      wordIndex + 1
-                    )
-                  }
+                  setWordIndex(
+                    wordIndex + 1
+                  )
+                }
 
                 }}
                 disabled={
-                  wordIndex === words.length - 1
+                    wordIndex === levelWords.length - 1
                 }
               >
                 다음 →
@@ -1245,7 +1440,7 @@ setTypingFeedback(
 
               <div className="word-list-grid">
 
-                {words.map((item, index) => (
+                {levelWords.map((item, index) => (
 
                   <button
                     key={item.word}
