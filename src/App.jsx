@@ -31,6 +31,14 @@ function App() {
     : {}
 })
 
+const [learnedWords, setLearnedWords] = useState(() => {
+  const saved = localStorage.getItem('learnedWords')
+
+  return saved
+    ? JSON.parse(saved)
+    : {}
+})
+
 useEffect(() => {
 
   if (wordLevel === null) {
@@ -47,6 +55,35 @@ useEffect(() => {
   localStorage.setItem(
     'wordProgress',
     JSON.stringify(newProgress)
+  )
+
+}, [wordLevel, wordIndex])
+
+useEffect(() => {
+
+  if (wordLevel === null) {
+    return
+  }
+
+  const levelLearnedWords = learnedWords[wordLevel] || []
+
+  if (levelLearnedWords.includes(wordIndex)) {
+    return
+  }
+
+  const newLearnedWords = {
+    ...learnedWords,
+    [wordLevel]: [
+      ...levelLearnedWords,
+      wordIndex
+    ]
+  }
+
+  setLearnedWords(newLearnedWords)
+
+  localStorage.setItem(
+    'learnedWords',
+    JSON.stringify(newLearnedWords)
   )
 
 }, [wordLevel, wordIndex])
@@ -1344,6 +1381,21 @@ setTypingFeedback(
                 {wordIndex + 1} / {levelWords.length}
               </div>
 
+              <div className="word-progress">
+  <div className="word-progress-bar">
+    <div
+      className="word-progress-fill"
+      style={{
+        width: `${((wordIndex + 1) / levelWords.length) * 100}%`
+      }}
+    />
+  </div>
+
+  <div className="word-progress-text">
+    {Math.round(((wordIndex + 1) / levelWords.length) * 100)}%
+  </div>
+</div>
+
               <div className="word-japanese">
                 {currentWord.word}
               </div>
@@ -1438,6 +1490,16 @@ setTypingFeedback(
                 단어를 클릭하면 해당 단어로 이동합니다.
               </p>
 
+              <div className="word-learned-count">
+                학습 완료 {learnedWords[wordLevel]?.length || 0} / {levelWords.length}
+              </div>
+
+              <div className="word-learned-rate">
+                학습률 {Math.round(
+                  ((learnedWords[wordLevel]?.length || 0) / levelWords.length) * 100
+                )}%
+              </div>
+
               <div className="word-list-grid">
 
                 {levelWords.map((item, index) => (
@@ -1454,6 +1516,10 @@ setTypingFeedback(
                     }
                   >
 
+                    <span className="learned-mark">
+                      {learnedWords[wordLevel]?.includes(index) ? '✓' : '○'}
+                    </span>
+                    
                     <span className="list-word">
                       {item.word}
                     </span>

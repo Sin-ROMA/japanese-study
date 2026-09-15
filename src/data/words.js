@@ -12,9 +12,9 @@ const normalizeWords = (data) =>
     romaji: item.romaji?.[0] || '',
     meaning: item.koreanMeaning || item.meaning,
     level: item.jlptLevel,
-    example: '',
-    exampleRomaji: '',
-    exampleMeaning: ''
+    example: item.example || '',
+    exampleRomaji: item.exampleRomaji || '',
+    exampleMeaning: item.exampleMeaning || ''
   }))
 
 const words = [
