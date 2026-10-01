@@ -1413,3 +1413,10 @@ footer {
   font-size: 13px;
   color: #888;
 }
+
+.typing-meaning {
+  margin-top: 8px;
+  font-size: 18px;
+  font-weight: 500;
+  color: #666;
+}

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import * as wanakana from 'wanakana'
 import './App.css'
 import hiragana from './data/hiragana'
 import katakana from './data/katakana'
@@ -408,10 +409,14 @@ useEffect(() => {
   const currentWord = words[typingIndex]
 
   const answer =
-    currentWord.romaji.toLowerCase()
+  wanakana
+    .toHiragana(currentWord.reading.trim())
+    .replace(/[～〜~]/g, '')
 
   const input =
-    value.trim().toLowerCase()
+  wanakana
+    .toHiragana(value.trim())
+    .replace(/[～〜~]/g, '')
 
   setTypingInput(value)
 
@@ -485,7 +490,7 @@ useEffect(() => {
 }
 
 setTypingFeedback(
-  `❌ 오답입니다! 정답: ${currentWord.romaji}`
+  `❌ 오답입니다! 정답: ${currentWord.reading}`
 )
 
 }
@@ -2653,6 +2658,10 @@ setTypingFeedback(
                 {currentWord.reading}
               </div>
 
+              <p className="typing-meaning">
+                {words[typingIndex].meaning}
+              </p>
+
 
               {typingFeedback && (
 
@@ -2730,20 +2739,27 @@ setTypingFeedback(
 
 
               <input
-                className="typing-input"
-                type="text"
-                value={typingInput}
-                onChange={(event) =>
-                  setTypingInput(event.target.value)
-                }
-                onKeyDown={(event) => {
-                  if (event.key === 'Enter') {
-                    checkTypingAnswer(typingInput)
-                  }
-                }}
-                autoFocus
-                placeholder="로마자를 입력하세요"
-              />
+  className="typing-input"
+  type="text"
+  value={typingInput}
+  onChange={(event) => {
+    const converted = wanakana.toKana(
+      event.target.value,
+      {
+        IMEMode: true
+      }
+    )
+
+    setTypingInput(converted)
+  }}
+  onKeyDown={(event) => {
+    if (event.key === 'Enter') {
+      checkTypingAnswer(typingInput)
+    }
+  }}
+  autoFocus
+  placeholder="로마자를 입력하세요"
+/>
 
 
               <p className="typing-hint">
